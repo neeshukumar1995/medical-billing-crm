@@ -1,0 +1,119 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<title>CRM — Product Overview</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+  @page { size: 21cm 29.7cm; margin: 2.5cm; }
+  body { font-family: Calibri, Arial, sans-serif; font-size: 12pt; color:#1a1a1a; line-height:1.5; }
+  h1.title { font-size: 30pt; color:#1f3a7a; margin-bottom:4pt; }
+  h2.subtitle { font-size:14pt; color:#555; font-weight:normal; margin-top:0; }
+  h1.section { font-size:18pt; color:#1f3a7a; border-bottom:2px solid #4f7cff; padding-bottom:4pt; margin-top:32pt; }
+  h2.section { font-size:14pt; color:#2a4a9c; margin-top:18pt; }
+  p { margin:8pt 0; }
+  ul { margin:8pt 0; padding-left:22pt; }
+  li { margin-bottom:6pt; }
+  table.info { border-collapse:collapse; width:100%; margin:10pt 0; }
+  table.info td { border:1px solid #ccc; padding:8pt 10pt; font-size:11pt; }
+  table.info td.k { background:#eef2fb; font-weight:bold; width:35%; }
+  .badge { display:inline-block; background:#eef2fb; color:#1f3a7a; padding:3pt 10pt; border-radius:10pt; font-size:10pt; font-weight:bold; margin-bottom:10pt; }
+  .status-active { color:#17c666; font-weight:bold; }
+  .status-inactive { color:#6c757d; font-weight:bold; }
+  .status-suspended { color:#dc3545; font-weight:bold; }
+  hr.page-break { page-break-before: always; border:none; }
+</style>
+</head>
+<body>
+
+<div class="badge">PRODUCT OVERVIEW</div>
+<h1 class="title">CRM</h1>
+<h2 class="subtitle">A multi-client customer relationship platform built for healthcare organizations — clients, users and communication, unified in one workspace.</h2>
+
+<table class="info">
+  <tr><td class="k">Document</td><td>Product Overview — CRM</td></tr>
+  <tr><td class="k">Prepared for</td><td>Internal / Stakeholder Presentation</td></tr>
+</table>
+
+<h1 class="section">Agenda</h1>
+<ul>
+  <li><b>Client Management</b> — Multi-tenant clients with access-level control</li>
+  <li><b>Users &amp; Roles</b> — Granular permissions, per-user status</li>
+  <li><b>Dashboard &amp; Reports</b> — Real-time visibility across the org</li>
+  <li><b>Security</b> — Permission guards &amp; client-level access control</li>
+</ul>
+
+<h1 class="section">Why CRM</h1>
+<p>One workspace instead of five disconnected tools.</p>
+<ul>
+  <li><b>Multiple clients, one login</b> — switch between organizations you have access to without juggling accounts.</li>
+  <li><b>Consistent access control</b> — the same role &amp; permission model everywhere, not bolted on per-module.</li>
+  <li><b>Built to scale with your team</b> — superadmins manage every client; client admins stay scoped to their own.</li>
+</ul>
+
+<hr class="page-break">
+
+<h1 class="section">Client Management</h1>
+<p>Every tenant is a Client — with its own users and data — created, viewed and edited from clean in-context popups, no page-hopping required.</p>
+<table class="info">
+  <tr><td class="k"><span class="status-active">Active</span></td><td>Full access</td></tr>
+  <tr><td class="k"><span class="status-inactive">Inactive</span></td><td>Disabled — no access</td></tr>
+  <tr><td class="k"><span class="status-suspended">Suspended</span></td><td>Locked — preview only</td></tr>
+</table>
+<p>Login itself respects this status — a suspended or disabled client is blocked at sign-in, not just hidden in the UI.</p>
+
+<h1 class="section">Users, Roles &amp; Permissions</h1>
+<ul>
+  <li><b>Role-based access</b> — Every screen and action is gated by a named permission — view, create, edit, delete — assigned per role.</li>
+  <li><b>Per-user status</b> — Active / Inactive toggle per employee, changed instantly from the user list.</li>
+  <li><b>Cross-client access</b> — Superadmins can grant a user visibility into more than one client's data.</li>
+</ul>
+
+<hr class="page-break">
+
+<h1 class="section">Dashboard &amp; Reports</h1>
+<p>A live view of what matters — team activity and client-wide numbers — plus dedicated report screens for deeper analysis.</p>
+<ul>
+  <li>Team activity</li>
+  <li>Client-level rollups</li>
+  <li>Exportable reports</li>
+</ul>
+
+<h1 class="section">Security</h1>
+<p>Access control, end to end.</p>
+<ul>
+  <li><b>Permission guards</b> on every page — a user without the right permission never sees the screen, not just the button.</li>
+  <li><b>Client-status aware login</b> — Inactive or Suspended clients are blocked at sign-in with a clear message.</li>
+  <li><b>Scoped data access</b> — users only see the client (or clients) they've been explicitly granted.</li>
+</ul>
+
+<h1 class="section">Technology</h1>
+<table class="info">
+  <tr><td class="k">Frontend</td><td>Next.js + React</td></tr>
+  <tr><td class="k">UI</td><td>Bootstrap-based design system</td></tr>
+  <tr><td class="k">Data</td><td>REST API integration</td></tr>
+  <tr><td class="k">Auth</td><td>Token-based, client-scoped sessions</td></tr>
+</table>
+
+<h1 class="section">Why It Matters</h1>
+<p>One CRM, every client you manage.</p>
+<ul>
+  <li><b>Faster onboarding</b> — New clients are up and running in minutes, not days.</li>
+  <li><b>Modular by design</b> — Turn on only the modules a client needs.</li>
+  <li><b>Built to grow</b> — Same platform scales from one client to a whole network.</li>
+</ul>
+
+<hr class="page-break">
+
+<h1 class="section">Thank You</h1>
+<p>CRM — one workspace for every client you manage.</p>
+
+</body>
+</html>

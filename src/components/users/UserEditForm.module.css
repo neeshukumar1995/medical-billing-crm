@@ -1,0 +1,54 @@
+.profilePreview {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.iconPosition {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  margin-left: 0.75rem;
+  color: #6c757d;
+}
+
+.inputWithIcon {
+  padding-left: 2.5rem;
+}
+
+.inputWithIconRight {
+  padding-right: 2.5rem;
+}
+
+.eyeButton {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  margin-right: 0.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  z-index: 5;
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.loadingSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}

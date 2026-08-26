@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Medical Billing — Product Presentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#081513;
+    --card:#0f231f;
+    --card-border:#1e3a34;
+    --ink:#eef7f4;
+    --ink-dim:#9fc2b8;
+    --accent:#1fbf9f;
+    --accent-2:#5ee6c8;
+    --accent-soft:rgba(31,191,159,.14);
+    --warn:#ff6b6b;
+    --radius:18px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font);
+    overflow:hidden;
+  }
+  .deck{ position:relative; height:100vh; width:100vw; }
+  .slide{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:6vh 9vw;
+    opacity:0; transform:translateX(40px); pointer-events:none;
+    transition:opacity .45s ease, transform .45s ease;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, var(--accent-soft), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(94,230,200,.10), transparent 60%),
+      var(--bg);
+  }
+  .slide.active{ opacity:1; transform:translateX(0); pointer-events:auto; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--accent-2); margin-bottom:18px;
+  }
+  .eyebrow::before{ content:""; width:26px;height:2px; background:var(--accent-2); display:inline-block; }
+  h1{ font-size:clamp(34px, 5vw, 64px); line-height:1.05; margin:0 0 18px; font-weight:800; letter-spacing:-.02em; }
+  h1 span{ background:linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h2{ font-size:clamp(26px, 3.4vw, 42px); margin:0 0 28px; font-weight:800; letter-spacing:-.01em; }
+  p.lead{ font-size:clamp(16px, 1.6vw, 20px); color:var(--ink-dim); max-width:760px; line-height:1.6; margin:0 0 8px; }
+  .grid{ display:grid; gap:18px; }
+  .grid.cols-3{ grid-template-columns:repeat(3, 1fr); }
+  .grid.cols-2{ grid-template-columns:repeat(2, 1fr); }
+  .grid.cols-4{ grid-template-columns:repeat(4, 1fr); }
+  .card{ background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius); padding:22px 20px; }
+  .card .icon{ width:42px;height:42px; border-radius:12px; display:flex;align-items:center;justify-content:center; background:var(--accent-soft); color:var(--accent-2); font-size:19px; margin-bottom:12px; }
+  .card h3{ margin:0 0 8px; font-size:16px; font-weight:700; }
+  .card p{ margin:0; font-size:13.5px; line-height:1.55; color:var(--ink-dim); }
+  .two-col{ display:grid; grid-template-columns:1.1fr .9fr; gap:48px; align-items:center; }
+  ul.check{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+  ul.check li{ display:flex; gap:12px; align-items:flex-start; font-size:15px; color:var(--ink-dim); line-height:1.5; }
+  ul.check li b{ color:var(--ink); font-weight:600; }
+  ul.check li .tick{ width:20px;height:20px;flex-shrink:0;border-radius:50%; background:var(--accent-soft); color:var(--accent-2); display:flex;align-items:center;justify-content:center; font-size:12px; margin-top:1px; }
+  .stack-visual{ background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius); padding:26px; }
+  .stack-visual .row{ display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px dashed var(--card-border); font-size:14px; }
+  .stack-visual .row:last-child{ border-bottom:none; }
+  .stack-visual .row span:first-child{ color:var(--ink-dim); }
+  .stack-visual .row span:last-child{ font-weight:700; }
+  .tag-cloud{ display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+  .tag-cloud span{ padding:8px 14px; border-radius:999px; font-size:13px; background:var(--card); border:1px solid var(--card-border); color:var(--ink-dim); }
+  .flow{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px; }
+  .flow .step{ background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:12px 16px; font-size:13px; font-weight:600; }
+  .flow .arrow{ color:var(--accent-2); font-size:16px; }
+  .footer-note{ position:absolute; bottom:5vh; left:9vw; font-size:12px; color:var(--ink-dim); opacity:.6; }
+  .slide-number{ position:absolute; bottom:5vh; right:9vw; font-size:12px; color:var(--ink-dim); opacity:.6; }
+  .progress{ position:fixed; top:0; left:0; height:3px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); z-index:20; transition:width .4s ease; }
+  .dots{ position:fixed; bottom:22px; left:50%; transform:translateX(-50%); display:flex; gap:9px; z-index:20; }
+  .dots button{ width:8px;height:8px;border-radius:50%; border:none; background:var(--card-border); cursor:pointer; padding:0; transition:all .25s ease; }
+  .dots button.active{ background:var(--accent-2); width:22px; border-radius:5px; }
+  .nav-btn{ position:fixed; top:50%; transform:translateY(-50%); width:46px;height:46px;border-radius:50%; background:var(--card); border:1px solid var(--card-border); color:var(--ink); font-size:18px; cursor:pointer; z-index:20; display:flex;align-items:center;justify-content:center; opacity:.7; transition:opacity .2s; }
+  .nav-btn:hover{ opacity:1; }
+  .nav-btn.prev{ left:20px; }
+  .nav-btn.next{ right:20px; }
+  .center-slide{ align-items:center; text-align:center; }
+  .center-slide h1{ margin-left:auto;margin-right:auto; }
+  .center-slide p.lead{ margin-left:auto;margin-right:auto; }
+  .cta-badge{ display:inline-flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--card-border); padding:10px 18px; border-radius:999px; margin-top:30px; font-size:14px; color:var(--ink-dim); }
+
+  @media print{
+    body{ overflow:visible; }
+    .progress, .dots, .nav-btn{ display:none !important; }
+    .slide{ position:relative; opacity:1 !important; transform:none !important; height:100vh; page-break-after:always; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" style="width:7.1%"></div>
+
+<div class="deck" id="deck">
+
+  <!-- Slide 1: Title -->
+  <section class="slide active center-slide">
+    <div class="eyebrow" style="margin-left:auto;margin-right:auto;">Product Overview</div>
+    <h1>Medical <span>Billing</span></h1>
+    <p class="lead">End-to-end revenue cycle management — from patient intake to claim payment — built into the same platform as your CRM.</p>
+    <div class="cta-badge">💳 Full revenue cycle, one system</div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">01 / 14</div>
+  </section>
+
+  <!-- Slide 2: Agenda -->
+  <section class="slide">
+    <div class="eyebrow">Agenda</div>
+    <h2>What we'll cover</h2>
+    <div class="grid cols-4">
+      <div class="card"><div class="icon">🧑‍⚕️</div><h3>Patients &amp; Scheduling</h3><p>Intake, appointments, encounters</p></div>
+      <div class="card"><div class="icon">🧾</div><h3>Charges &amp; Claims</h3><p>Capture, submit, track</p></div>
+      <div class="card"><div class="icon">💰</div><h3>Payments &amp; AR</h3><p>Collections &amp; receivables</p></div>
+      <div class="card"><div class="icon">🏥</div><h3>Payers &amp; Providers</h3><p>Insurance, providers, vendors</p></div>
+      <div class="card"><div class="icon">📦</div><h3>Inventory &amp; POs</h3><p>Supplies &amp; purchasing</p></div>
+      <div class="card"><div class="icon">📁</div><h3>Documents</h3><p>Central records repository</p></div>
+      <div class="card"><div class="icon">🗂️</div><h3>Master Data</h3><p>Configurable reference data</p></div>
+      <div class="card"><div class="icon">📊</div><h3>Reports &amp; Dashboard</h3><p>Operational visibility</p></div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">02 / 14</div>
+  </section>
+
+  <!-- Slide 3: Revenue cycle flow -->
+  <section class="slide">
+    <div class="eyebrow">The Big Picture</div>
+    <h2>One system, the whole revenue cycle</h2>
+    <p class="lead">Every stage of getting paid for care — modeled as a connected flow, not disconnected spreadsheets.</p>
+    <div class="flow">
+      <div class="step">Patient Intake</div><span class="arrow">→</span>
+      <div class="step">Appointment</div><span class="arrow">→</span>
+      <div class="step">Encounter</div><span class="arrow">→</span>
+      <div class="step">Charge Capture</div><span class="arrow">→</span>
+      <div class="step">Claim Submission</div><span class="arrow">→</span>
+      <div class="step">Payment / Denial</div><span class="arrow">→</span>
+      <div class="step">AR &amp; Reporting</div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">03 / 14</div>
+  </section>
+
+  <!-- Slide 4: Patients & Scheduling -->
+  <section class="slide">
+    <div class="eyebrow">Core Module</div>
+    <h2>Patients &amp; Scheduling</h2>
+    <div class="grid cols-3">
+      <div class="card"><div class="icon">🧑‍⚕️</div><h3>Patients</h3><p>Central patient records — demographics, history and billing details in one profile.</p></div>
+      <div class="card"><div class="icon">📅</div><h3>Appointments</h3><p>Book, edit and track appointments tied to each patient and provider.</p></div>
+      <div class="card"><div class="icon">📝</div><h3>Encounters</h3><p>Document each visit — the source record that charges are built from.</p></div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">04 / 14</div>
+  </section>
+
+  <!-- Slide 5: Charges & Claims -->
+  <section class="slide">
+    <div class="eyebrow">Core Module</div>
+    <h2>Charges &amp; Claims</h2>
+    <div class="two-col">
+      <ul class="check">
+        <li><span class="tick">✓</span><span><b>Charge capture</b> — turn an encounter into billable line items.</span></li>
+        <li><span class="tick">✓</span><span><b>Claims workflow</b> — build, review and submit claims to payers.</span></li>
+        <li><span class="tick">✓</span><span><b>Denial management</b> — track denied claims and manage appeals in one queue.</span></li>
+      </ul>
+      <div class="stack-visual">
+        <div class="row"><span>Charges</span><span>Create &amp; edit</span></div>
+        <div class="row"><span>Claims</span><span>Track by status</span></div>
+        <div class="row"><span>Denials</span><span>Reason + appeal</span></div>
+      </div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">05 / 14</div>
+  </section>
+
+  <!-- Slide 6: Payments & AR -->
+  <section class="slide">
+    <div class="eyebrow">Core Module</div>
+    <h2>Payments &amp; Accounts Receivable</h2>
+    <div class="grid cols-3">
+      <div class="card"><div class="icon">💳</div><h3>Payments</h3><p>Record payer payments against claims.</p></div>
+      <div class="card"><div class="icon">🧍</div><h3>Patient Payments</h3><p>Capture co-pays and out-of-pocket collections.</p></div>
+      <div class="card"><div class="icon">🏦</div><h3>Deposits &amp; AR</h3><p>Bank deposits reconciled against an aging accounts-receivable view.</p></div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">06 / 14</div>
+  </section>
+
+  <!-- Slide 7: Payers, Providers, Vendors -->
+  <section class="slide">
+    <div class="eyebrow">Core Module</div>
+    <h2>Payers, Providers &amp; Vendors</h2>
+    <div class="grid cols-3">
+      <div class="card"><div class="icon">🏥</div><h3>Insurance Payers</h3><p>Maintain the payer directory claims are submitted against.</p></div>
+      <div class="card"><div class="icon">👨‍⚕️</div><h3>Providers</h3><p>Manage the clinicians delivering and billing for care.</p></div>
+      <div class="card"><div class="icon">🚚</div><h3>Vendors</h3><p>Track suppliers behind purchase orders and inventory.</p></div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">07 / 14</div>
+  </section>
+
+  <!-- Slide 8: Inventory & Accounts -->
+  <section class="slide">
+    <div class="eyebrow">Core Module</div>
+    <h2>Inventory, Purchase Orders &amp; Accounts</h2>
+    <div class="grid cols-3">
+      <div class="card"><div class="icon">📦</div><h3>Inventory</h3><p>Track medical supplies and stock levels.</p></div>
+      <div class="card"><div class="icon">🧾</div><h3>Purchase Orders</h3><p>Order from vendors and track fulfillment.</p></div>
+      <div class="card"><div class="icon">📒</div><h3>Accounts</h3><p>Chart of accounts underpinning financial records.</p></div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">08 / 14</div>
+  </section>
+
+  <!-- Slide 9: Documents & Master Data -->
+  <section class="slide">
+    <div class="eyebrow">Core Module</div>
+    <h2>Documents &amp; Master Data</h2>
+    <div class="grid cols-2">
+      <div class="card"><div class="icon">📁</div><h3>Documents</h3><p>A central repository for billing-related files and records, attached where they're needed.</p></div>
+      <div class="card"><div class="icon">🗂️</div><h3>Master Data</h3><p>Configurable reference data (codes, types, categories) that keeps the whole system consistent.</p></div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">09 / 14</div>
+  </section>
+
+  <!-- Slide 10: Workflow tools -->
+  <section class="slide">
+    <div class="eyebrow">Day-to-Day</div>
+    <h2>Built for the billing team's daily workflow</h2>
+    <ul class="check">
+      <li><span class="tick">✓</span><span><b>My Work</b> — a personal queue of what needs attention today.</span></li>
+      <li><span class="tick">✓</span><span><b>Activity log</b> — a full audit trail of what changed and when.</span></li>
+      <li><span class="tick">✓</span><span><b>Reports</b> — operational and financial reporting across the revenue cycle.</span></li>
+    </ul>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">10 / 14</div>
+  </section>
+
+  <!-- Slide 11: Dashboard -->
+  <section class="slide">
+    <div class="eyebrow">Core Module</div>
+    <h2>Dashboard</h2>
+    <p class="lead">A single screen for where the money stands — claims in flight, outstanding AR, denials needing attention, and recent payment activity.</p>
+    <div class="tag-cloud">
+      <span>Claims status</span><span>AR aging</span><span>Denial rate</span><span>Recent payments</span><span>Provider productivity</span>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">11 / 14</div>
+  </section>
+
+  <!-- Slide 12: Security -->
+  <section class="slide">
+    <div class="eyebrow">Trust &amp; Security</div>
+    <h2>Sensitive data, handled carefully</h2>
+    <ul class="check">
+      <li><span class="tick">✓</span><span><b>Permission-gated screens</b> — billing staff only see the modules their role allows.</span></li>
+      <li><span class="tick">✓</span><span><b>Company-scoped records</b> — patient and financial data stays within its own company.</span></li>
+      <li><span class="tick">✓</span><span><b>Full activity trail</b> — every change is logged for accountability and audit.</span></li>
+    </ul>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">12 / 14</div>
+  </section>
+
+  <!-- Slide 13: Tech stack -->
+  <section class="slide">
+    <div class="eyebrow">Under the Hood</div>
+    <h2>Technology</h2>
+    <div class="stack-visual" style="max-width:640px;">
+      <div class="row"><span>Frontend</span><span>Next.js + React</span></div>
+      <div class="row"><span>UI</span><span>Bootstrap-based design system</span></div>
+      <div class="row"><span>Data</span><span>REST API integration</span></div>
+      <div class="row"><span>Shared platform</span><span>Same login &amp; company model as CRM</span></div>
+    </div>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">13 / 14</div>
+  </section>
+
+  <!-- Slide 14: Thank you -->
+  <section class="slide center-slide">
+    <div class="eyebrow" style="margin-left:auto;margin-right:auto;">Thank You</div>
+    <h1>Questions &amp; <span>Discussion</span></h1>
+    <p class="lead">Medical Billing — the full revenue cycle, without leaving your CRM.</p>
+    <div class="footer-note">Medical Billing</div>
+    <div class="slide-number">14 / 14</div>
+  </section>
+
+</div>
+
+<button class="nav-btn prev" onclick="go(-1)" aria-label="Previous slide">‹</button>
+<button class="nav-btn next" onclick="go(1)" aria-label="Next slide">›</button>
+<div class="dots" id="dots"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dotsWrap = document.getElementById('dots');
+  const progress = document.getElementById('progress');
+  let idx = 0;
+
+  slides.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.addEventListener('click', () => { idx = i; render(); });
+    dotsWrap.appendChild(b);
+  });
+
+  function render(){
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    [...dotsWrap.children].forEach((d, i) => d.classList.toggle('active', i === idx));
+    progress.style.width = ((idx + 1) / slides.length * 100) + '%';
+  }
+
+  function go(delta){
+    idx = Math.min(Math.max(idx + delta, 0), slides.length - 1);
+    render();
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)) { go(1); e.preventDefault(); }
+    if (['ArrowLeft','ArrowUp','PageUp'].includes(e.key)) { go(-1); e.preventDefault(); }
+  });
+
+  let touchStartX = 0;
+  window.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+  window.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+  });
+
+  render();
+</script>
+
+</body>
+</html>

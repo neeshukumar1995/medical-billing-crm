@@ -1,0 +1,716 @@
+/* ==========================================================================
+   Leads Report Page — styles
+   Pure presentation layer. No logic lives here.
+   ========================================================================== */
+
+/* ---------- Page header (top bar next to page title) ---------- */
+.lr-page-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lr-page-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+  color: inherit;
+}
+
+.lr-badge-leads {
+  background: #0DCAF0;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.lr-page-info {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.lr-export-btn {
+  background: #0DCAF0;
+  color: #fff;
+  border: none;
+  padding:7px 16px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+}
+
+.lr-export-btn.lr-email-btn {
+  background: #534AB7;
+}
+
+/* ---------- Status summary cards ---------- */
+.lr-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.lr-status-card {
+  border-radius: 10px;
+     gap: 1px;
+    padding: 4px 7px;
+  
+  flex-direction: column;
+  
+}
+
+.lr-status-card-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.lr-status-card-count {
+      font-size: 13px;
+    font-weight: 600;
+    line-height: 0;
+    padding-left: 7px;
+}
+
+/* ---------- Toolbar (Filter / Sort / view toggles) ---------- */
+.lr-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin-bottom: 12px;
+}
+
+.lr-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lr-toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  padding: 7px 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: #444;
+  cursor: pointer;
+}
+
+.lr-toolbar-btn:hover {
+  background: #f1f3f5;
+}
+
+.lr-toolbar-btn.lr-active {
+  background: #e6f8fc;
+  color: #0aa8cc;
+}
+
+.lr-toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 0 4px;
+}
+
+/* ---------- Layout: sidebar + table ---------- */
+.lr-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* ---------- Sidebar filter panel ---------- */
+.lr-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: #fff;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 16px;
+  position: sticky;
+  top: 12px;
+}
+
+.lr-sidebar.lr-hidden {
+  display: none;
+}
+
+.lr-sidebar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #212529;
+  margin: 0 0 12px;
+}
+
+.lr-sidebar-search-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.lr-sidebar-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #adb5bd;
+}
+
+.lr-sidebar-search-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px 0 30px;
+  border: 0.5px solid rgba(0, 0, 0, 0.18);
+  border-radius: 8px;
+  font-size: 13px;
+  background: #f8f9fa;
+  color: #212529;
+  outline: none;
+}
+
+.lr-filter-group {
+  margin-bottom: 14px;
+}
+
+.lr-filter-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.lr-filter-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.lr-filter-input {
+    color: #212529;
+    background: #f8f9fa;
+    border: .5px solid #0000002e;
+    border-radius: 8px;
+    outline: none;
+    width: 100%;
+    height: 35px;
+    padding: 0 10px;
+    font-size: 10px;
+}
+
+.lr-filter-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.lr-sidebar-reset-btn {
+  width: 100%;
+  height: 36px;
+  margin-top: 18px;
+  background: #fff0f0;
+  color: #A32D2D;
+  border: 0.5px solid #F7C1C1;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ---------- Table card ---------- */
+.lr-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.lr-table-card {
+  background: #fff;
+  border: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.lr-table-wrap {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 65vh; /* table ka apna scroll area — page nahi scroll hoga */
+}
+
+.lr-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lr-thead {
+  background: #f8f9fa;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.lr-thead .lr-th,
+.lr-thead .lr-th-checkbox {
+  background: #f8f9fa; /* sticky header ke peeche se rows na dikhein isliye opaque bg */
+}
+
+.lr-th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6c757d;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.lr-th-checkbox {
+  width: 36px;
+  padding: 10px 12px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.08);
+}
+
+.lr-th-sortable {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  user-select: none;
+}
+
+.lr-th-sortable:hover {
+  color: #0aa8cc;
+}
+
+.lr-th-right {
+  text-align: right;
+}
+
+.lr-td {
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #212529;
+  vertical-align: middle;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.lr-td-checkbox {
+  padding: 10px 12px;
+  vertical-align: middle;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.lr-td-sno {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #6c757d;
+  vertical-align: middle;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.lr-td-empty {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+}
+
+.lr-td-loading {
+  text-align: center;
+  padding: 32px;
+}
+
+.lr-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.lr-loading-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: #6c757d;
+}
+
+/* row */
+.lr-row {
+  cursor: default;
+}
+
+.lr-avatar-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lr-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.lr-status-pill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.lr-fu-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #d97706;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 7px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.lr-fu-empty {
+  color: #adb5bd;
+  font-size: 12px;
+}
+
+.lr-age-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+}
+
+.lr-age-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.lr-action-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.lr-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6c757d;
+  transition: all 0.15s;
+}
+
+.lr-action-btn:hover {
+  background: #0DCAF0;
+  color: #fff;
+  border-color: #0DCAF0;
+}
+
+.lr-checkbox {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: #0DCAF0;
+}
+
+/* ---------- Footer bar: Total Records + pagination (Zoho style) ---------- */
+.lr-footer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.lr-footer-total {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.lr-footer-total strong {
+  color: #212529;
+  font-weight: 600;
+}
+
+.lr-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.lr-pg-range {
+  font-size: 12px;
+  color: #6c757d;
+  margin-right: 6px;
+}
+
+.lr-pg-btn {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: 7px;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  color: #6c757d;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 400;
+}
+
+.lr-pg-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.lr-pg-btn.lr-pg-active {
+  border: none;
+  background: #0DCAF0;
+  color: #fff;
+  font-weight: 500;
+}
+
+.lr-pg-ellipsis {
+  font-size: 12px;
+  color: #6c757d;
+  padding: 0 4px;
+}
+
+/* ---------- Links ---------- */
+.lr-link {
+  text-decoration: none;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ---------- Email modal ---------- */
+.lr-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.lr-modal-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: 420px;
+  max-width: 90%;
+}
+
+.lr-modal-title {
+  margin-bottom: 16px;
+}
+
+.lr-modal-textarea {
+  height: 100px;
+  padding: 8px 10px;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+.lr-modal-filter-summary {
+  font-size: 12px;
+  color: #6c757d;
+  margin-bottom: 16px;
+}
+
+.lr-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.lr-modal-cancel-btn {
+  background: #f8f9fa;
+  color: #212529;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  padding: 0 14px;
+  height: 34px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .lr-layout {
+    flex-direction: column;
+  }
+  .lr-sidebar {
+    width: 100%;
+    position: static;
+  }
+}
+
+.lr-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+}
+
+/* Sticky Actions column — header + body dono */
+.lr-th-actions,
+.lr-td-actions {
+  position: sticky;
+  right: 0;
+  z-index: 0;
+  width: 110px;
+  min-width: 110px;
+  max-width: 110px;
+  background-color: #fff;
+  box-shadow: -6px 0 6px -6px rgba(0, 0, 0, 0.15);
+}
+
+.lr-th-actions {
+  background-color: #f8f9fa;
+  z-index: 4;
+}
+
+/* row ka apna background sticky td pe bhi lagana zaroori hai,
+   warna scroll ke time neeche ka content transparent se dikhega */
+.lr-row:nth-child(even) .lr-td-actions {
+  background-color: #fff;
+}
+
+.lr-row:hover .lr-td-actions {
+  background-color: #fff;
+}
+/* ---------- Toolbar right side: entries-per-page ---------- */
+.lr-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lr-toolbar-perpage-label {
+  font-size: 12px;
+  color: #6c757d;
+  white-space: nowrap;
+}
+
+.lr-toolbar-perpage-select {
+  width: 140px;
+}
+/* ---------- Toolbar search box (left of entries-per-page) ---------- */
+.lr-toolbar-search-wrap {
+  position: relative;
+  width: 220px;
+}
+
+.lr-toolbar-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #adb5bd;
+  display: flex;
+  align-items: center;
+}
+
+.lr-toolbar-search-input {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px 0 30px;
+  border: 0.5px solid rgba(0, 0, 0, 0.18);
+  border-radius: 8px;
+  font-size: 13px;
+  background: #f8f9fa;
+  color: #212529;
+  outline: none;
+}
+.select-dropdown .select-box {
+    cursor: pointer;
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 17px;
+    display: flex;
+}
+
+.table-responsive .table tr td:last-child {
+    padding-right: 30px;
+    background: #ffffff;
+}
+.btn {
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-radius: 3px;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 11px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: normal;
+    transition: all .3s;
+    display: flex;
+}
+.col-sm-12.px-0 {
+    height: 357px;
+}
+
+.btn {
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    border-radius: 3px;
+    justify-content: center;
+    align-items: center;
+    padding: 7px 9px;
+    font-size: 9px;
+    font-weight: 700;
+    line-height: normal;
+    transition: all .3s;
+    display: flex;
+}
+
