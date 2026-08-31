@@ -195,15 +195,24 @@ const DashboardPage = () => {
   // employees straight to their work queue instead of the CRM's
   // lead-focused user-dashboard, which would be empty/irrelevant for them.
   useEffect(() => {
-    if (userRole && !['superadmin', 'admin'].includes(userRole) && userRole !== '') {
-      const medicalBillingEnabled = user?.company?.medical_billing_enabled !== false
-      if (!crmEnabled && medicalBillingEnabled) {
-        router.push('/medical-billing/my-task')
-      } else {
-        router.push('/user-dashboard')
+    if (!userRole) return
+
+    if (['superadmin', 'admin'].includes(userRole)) {
+      // Company hasn't enabled CRM — this dashboard has nothing to show,
+      // send admins to the medical-billing dashboard instead.
+      if (!crmEnabled) {
+        router.push('/medical-billing/dashboard')
       }
+      return
     }
-  }, [userRole, user, router])
+
+    const medicalBillingEnabled = user?.company?.medical_billing_enabled !== false
+    if (!crmEnabled && medicalBillingEnabled) {
+      router.push('/medical-billing/my-task')
+    } else {
+      router.push('/user-dashboard')
+    }
+  }, [userRole, user, crmEnabled, router])
 
   // Update initial load state
   useEffect(() => {
@@ -419,7 +428,7 @@ const DashboardPage = () => {
   ], [filteredUserLeads])
 
   // Loading state
- if (isLoading || (dashboardLoading && isInitialLoad) || !isAuthenticated || isCompanyChanging || !['superadmin', 'admin'].includes(userRole)) {
+ if (isLoading || (dashboardLoading && isInitialLoad) || !isAuthenticated || isCompanyChanging || !['superadmin', 'admin'].includes(userRole) || !crmEnabled) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
