@@ -1,0 +1,31 @@
+.sticky-notes-layer { position: fixed; inset: 0; pointer-events: none; z-index: 1050; }
+.sticky-note-card {
+    position: absolute; width: 260px; min-height: 220px; border-radius: 4px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25); display: flex; flex-direction: column; pointer-events: auto;
+}
+.sticky-note-header { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; cursor: move; user-select: none; }
+.sticky-note-color-wrap { position: relative; }
+.sticky-note-color-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); cursor: pointer; }
+.sticky-note-color-picker { position: absolute; top: 22px; left: 0; display: flex; gap: 4px; background: #fff; padding: 6px; border-radius: 6px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); z-index: 10; }
+.sticky-note-color-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.15); cursor: pointer; }
+.sticky-note-header-actions { display: flex; align-items: center; gap: 10px; color: rgba(0,0,0,0.55); }
+.sticky-note-header-actions svg { cursor: pointer; }
+.sticky-note-header-actions svg:hover { color: rgba(0,0,0,0.85); }
+.sticky-note-toolbar { display: flex; gap: 4px; padding: 4px 8px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+.sticky-note-toolbar button { border: none; background: transparent; font-size: 12px; width: 22px; height: 22px; border-radius: 3px; cursor: pointer; }
+.sticky-note-toolbar button:hover { background: rgba(0,0,0,0.08); }
+.sticky-note-body { flex: 1; padding: 8px 10px; font-size: 13px; line-height: 1.5; outline: none; overflow-y: auto; word-break: break-word; }
+.sticky-note-body:empty:before { content: attr(data-placeholder); color: rgba(0,0,0,0.4); }
+.sticky-reminder-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+    display: flex; align-items: center; justify-content: center; z-index: 2000;
+    pointer-events: auto;   /* ← ye line add karo */
+}
+.sticky-reminder-modal {
+    background: #fff; border-radius: 8px; padding: 20px; width: 320px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+.sticky-reminder-title { margin-bottom: 14px; font-weight: 600; }
+.sticky-reminder-fields { display: flex; gap: 10px; margin-bottom: 16px; }
+.sticky-reminder-fields input { font-size: 13px; }
+.sticky-reminder-actions { display: flex; justify-content: flex-end; gap: 8px; }

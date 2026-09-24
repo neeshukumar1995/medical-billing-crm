@@ -1,0 +1,309 @@
+
+/* ==========================================================================
+   Outlook-style light theme
+   Restyles the existing header (nxl-header) and left navigation
+   (nxl-navigation) to look like Outlook Web — neutral white/gray,
+   icon+text collapsible sections, clean grouped toolbar in the header.
+   Import this AFTER Header.css / your global stylesheet so it wins.
+   ========================================================================== */
+
+:root {
+  --ol-bg: #ffffff;
+  --ol-bg-soft: #faf9f8;
+  --ol-border: #e1dfdd;
+  --ol-text: #242424;
+  --ol-text-muted: #605e5c;
+  --ol-accent: #2564cf;      /* Outlook link/selection blue */
+  --ol-accent-soft: #eaf1fc; /* selected row bg */
+  --ol-hover: #f3f2f1;
+  --ol-radius: 8px;
+}
+body {
+    color: #6b7885;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    background-color: #faf9f8;
+    font-family: Inter, sans-serif;
+    font-size: .84rem;
+    line-height: 1.6;
+    transition: all .3s;
+    overflow-x: hidden;
+}
+/* ---------------------------------------------------------------- */
+/* HEADER                                                            */
+/* ---------------------------------------------------------------- */
+
+.nxl-header.nxl-header--outlook {
+  background: #36495d !important;
+  border-bottom: 1px solid var(--ol-border);
+  box-shadow: none !important;
+}
+
+.nxl-header--outlook .header-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 77px;
+  padding: 0 16px;
+}
+
+.nxl-header--outlook .header-left {
+  flex-shrink: 0;
+}
+
+.nxl-header--outlook .header-left a,
+.nxl-header--outlook .nxl-navigation-toggle a {
+  color: var(--ol-text-muted);
+}
+
+.nxl-header--outlook .header-left a:hover,
+.nxl-header--outlook .nxl-navigation-toggle a:hover {
+  color: var(--ol-accent);
+}
+
+/* Center search takes remaining space, capped width like Outlook */
+.header-center {
+  flex: 1 1 auto;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
+}
+
+ 
+.ol-company-select {
+  width: 220px !important;
+  height: 34px;
+  border-radius: var(--ol-radius) !important;
+  border-color: var(--ol-border) !important;
+  background: var(--ol-bg-soft);
+  font-size: 13px;
+  color: var(--ol-text);
+}
+
+.ol-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 8px;
+  margin-left: 8px;
+  background: var(--ol-bg-soft);
+  border: 1px solid var(--ol-border);
+  border-radius: 999px;
+}
+
+.ol-toolbar-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ol-text-muted);
+}
+
+.ol-toolbar-item .nxl-head-link,
+.ol-toolbar-item svg {
+  color: var(--ol-text-muted);
+  cursor: pointer;
+}
+
+.ol-toolbar-item:hover svg {
+  color: var(--ol-accent);
+}
+
+.ol-toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--ol-border);
+}
+
+.ol-toolbar-profile {
+  padding-left: 2px;
+}
+
+/* ---------------------------------------------------------------- */
+/* LEFT NAVIGATION                                                    */
+/* ---------------------------------------------------------------- */
+
+.nxl-navigation {
+  background: var(--ol-bg-soft) !important;
+  border-right: 1px solid var(--ol-border);
+}
+
+.nxl-navigation .m-header {
+  border-bottom: 1px solid var(--ol-border);
+  padding-bottom: 12px;
+  margin-bottom: 12px !important;
+}
+
+.nxl-navigation .nxl-item.nxl-caption label {
+  color: var(--ol-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+}
+
+/* Menu links — icon + text rows, Outlook-style hover/selected states */
+.nxl-navigation .nxl-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ol-text);
+  font-size: 13.5px;
+  border-radius: var(--ol-radius);
+  margin: 2px 8px;
+  padding: 8px 10px;
+  transition: background .12s, color .12s;
+}
+
+.nxl-navigation .nxl-link:hover {
+  background: var(--ol-hover);
+  color: var(--ol-text);
+}
+
+.nxl-navigation .nxl-item.active > .nxl-link,
+.nxl-navigation .nxl-link.active {
+  background: var(--ol-accent-soft);
+  color: var(--ol-accent);
+  font-weight: 600;
+  position: relative;
+}
+
+.nxl-navigation .nxl-item.active > .nxl-link::before {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--ol-accent);
+}
+
+.nxl-navigation .nxl-micon {
+  display: flex;
+  align-items: center;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.nxl-navigation .nxl-mtext {
+  color: inherit;
+  flex: 1;
+}
+
+/* Submenu rows */
+.nxl-navigation .nxl-submenu .nxl-link {
+  margin-left: 20px;
+  font-size: 13px;
+  color: var(--ol-text-muted);
+  padding: 6px 10px;
+}
+
+.nxl-navigation .nxl-submenu .nxl-link:hover {
+  color: var(--ol-text);
+  background: var(--ol-hover);
+}
+
+/* ---------------------------------------------------------------- */
+/* RESPONSIVE                                                        */
+/* ---------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .header-center {
+    display: none;
+  }
+}
+
+
+input, .custom-file, .custom-select, .form-select, .form-control {
+    color: #283c50;
+    border-color: #e5e7eb;
+    border-radius: 5px;
+  padding: 4px 11px;
+    font-size: 12px;
+}
+.lv-hero {
+    background: linear-gradient(135deg, #656565 0%, #000000 50%, #812e2e 100%);
+    padding: 32px 32px 72px;
+    position: relative;
+    overflow: hidden;
+}
+
+.nxl-container .nxl-content .main-content {
+    padding: 10px 7px 5px;
+    overflow-x: hidden;
+}
+
+/* ── Follow Up Leads sidebar badge ── */
+.nxl-link {
+    display: flex;
+    align-items: center;
+}
+
+.nxl-badge-count {
+    margin-left: auto;
+    background: #ef4444; /* red */
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 2px 7px;
+    border-radius: 999px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.nxl-header .header-wrapper .nxl-lavel-mega-menu-toggle a, .nxl-header .header-wrapper .nxl-navigation-toggle a {
+    color: #ededed;
+}
+
+/* Active main menu — full background highlight, no left-border-only look */
+.nxl-item.active > .nxl-link {
+  background: rgba(99,102,241,.08) !important;
+  color: #4338ca !important;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.nxl-item.active > .nxl-link .nxl-micon svg {
+  color: #4338ca !important;
+}
+
+/* Hover state for non-active items */
+.nxl-item:not(.active) > .nxl-link:hover {
+  background: #f5f6fb;
+  border-radius: 10px;
+}
+
+/* Submenu — vertical connector line, indented */
+.nxl-submenu {
+  margin-left: 14px;
+  padding-left: 14px;
+  border-left: 1.5px solid #eceef3;
+}
+.nxl-submenu .nxl-item.active > .nxl-link {
+  color: #4338ca !important;
+  font-weight: 600;
+  background: transparent !important;
+}
+.nxl-submenu .nxl-link {
+  font-size: 13px;
+  padding: 7px 10px;
+}
+
+/* Follow-up leads badge */
+.nxl-badge-count {
+  margin-left: auto;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 20px;
+  line-height: 1.5;
+}
+
+.nxl-header .header-wrapper .nxl-h-dropdown {
+    width: 225px;
+    transition: all .3s ease-in-out;
+    top: 77% !important;
+}
