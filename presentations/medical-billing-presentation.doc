@@ -1,0 +1,145 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<title>Medical Billing — Product Overview</title>
+<!--[if gte mso 9]>
+<xml>
+<w:WordDocument>
+<w:View>Print</w:View>
+<w:Zoom>100</w:Zoom>
+<w:DoNotOptimizeForBrowser/>
+</w:WordDocument>
+</xml>
+<![endif]-->
+<style>
+  @page { size: 21cm 29.7cm; margin: 2.5cm; }
+  body { font-family: Calibri, Arial, sans-serif; font-size: 12pt; color:#1a1a1a; line-height:1.5; }
+  h1.title { font-size: 30pt; color:#0e6b57; margin-bottom:4pt; }
+  h2.subtitle { font-size:14pt; color:#555; font-weight:normal; margin-top:0; }
+  h1.section { font-size:18pt; color:#0e6b57; border-bottom:2px solid #1fbf9f; padding-bottom:4pt; margin-top:32pt; }
+  h2.section { font-size:14pt; color:#12886f; margin-top:18pt; }
+  p { margin:8pt 0; }
+  ul { margin:8pt 0; padding-left:22pt; }
+  li { margin-bottom:6pt; }
+  table.info { border-collapse:collapse; width:100%; margin:10pt 0; }
+  table.info td { border:1px solid #ccc; padding:8pt 10pt; font-size:11pt; }
+  table.info td.k { background:#e6f7f3; font-weight:bold; width:35%; }
+  .badge { display:inline-block; background:#e6f7f3; color:#0e6b57; padding:3pt 10pt; border-radius:10pt; font-size:10pt; font-weight:bold; margin-bottom:10pt; }
+  .flow { font-weight:bold; color:#0e6b57; }
+  hr.page-break { page-break-before: always; border:none; }
+</style>
+</head>
+<body>
+
+<div class="badge">PRODUCT OVERVIEW</div>
+<h1 class="title">Medical Billing</h1>
+<h2 class="subtitle">End-to-end revenue cycle management — from patient intake to claim payment — built into the same platform as your CRM.</h2>
+
+<table class="info">
+  <tr><td class="k">Document</td><td>Product Overview — Medical Billing</td></tr>
+  <tr><td class="k">Prepared for</td><td>Internal / Stakeholder Presentation</td></tr>
+</table>
+
+<h1 class="section">Agenda</h1>
+<ul>
+  <li><b>Patients &amp; Scheduling</b> — Intake, appointments, encounters</li>
+  <li><b>Charges &amp; Claims</b> — Capture, submit, track</li>
+  <li><b>Payments &amp; AR</b> — Collections &amp; receivables</li>
+  <li><b>Payers &amp; Providers</b> — Insurance, providers, vendors</li>
+  <li><b>Inventory &amp; POs</b> — Supplies &amp; purchasing</li>
+  <li><b>Documents</b> — Central records repository</li>
+  <li><b>Master Data</b> — Configurable reference data</li>
+  <li><b>Reports &amp; Dashboard</b> — Operational visibility</li>
+</ul>
+
+<h1 class="section">The Big Picture: The Revenue Cycle</h1>
+<p>Every stage of getting paid for care — modeled as a connected flow, not disconnected spreadsheets.</p>
+<p class="flow">Patient Intake → Appointment → Encounter → Charge Capture → Claim Submission → Payment / Denial → AR &amp; Reporting</p>
+
+<hr class="page-break">
+
+<h1 class="section">Patients &amp; Scheduling</h1>
+<ul>
+  <li><b>Patients</b> — Central patient records: demographics, history and billing details in one profile.</li>
+  <li><b>Appointments</b> — Book, edit and track appointments tied to each patient and provider.</li>
+  <li><b>Encounters</b> — Document each visit — the source record that charges are built from.</li>
+</ul>
+
+<h1 class="section">Charges &amp; Claims</h1>
+<ul>
+  <li><b>Charge capture</b> — turn an encounter into billable line items.</li>
+  <li><b>Claims workflow</b> — build, review and submit claims to payers.</li>
+  <li><b>Denial management</b> — track denied claims and manage appeals in one queue.</li>
+</ul>
+
+<h1 class="section">Payments &amp; Accounts Receivable</h1>
+<ul>
+  <li><b>Payments</b> — Record payer payments against claims.</li>
+  <li><b>Patient Payments</b> — Capture co-pays and out-of-pocket collections.</li>
+  <li><b>Deposits &amp; AR</b> — Bank deposits reconciled against an aging accounts-receivable view.</li>
+</ul>
+
+<hr class="page-break">
+
+<h1 class="section">Payers, Providers &amp; Vendors</h1>
+<ul>
+  <li><b>Insurance Payers</b> — Maintain the payer directory claims are submitted against.</li>
+  <li><b>Providers</b> — Manage the clinicians delivering and billing for care.</li>
+  <li><b>Vendors</b> — Track suppliers behind purchase orders and inventory.</li>
+</ul>
+
+<h1 class="section">Inventory, Purchase Orders &amp; Accounts</h1>
+<ul>
+  <li><b>Inventory</b> — Track medical supplies and stock levels.</li>
+  <li><b>Purchase Orders</b> — Order from vendors and track fulfillment.</li>
+  <li><b>Accounts</b> — Chart of accounts underpinning financial records.</li>
+</ul>
+
+<h1 class="section">Documents &amp; Master Data</h1>
+<ul>
+  <li><b>Documents</b> — A central repository for billing-related files and records, attached where they're needed.</li>
+  <li><b>Master Data</b> — Configurable reference data (codes, types, categories) that keeps the whole system consistent.</li>
+</ul>
+
+<hr class="page-break">
+
+<h1 class="section">Day-to-Day Workflow</h1>
+<ul>
+  <li><b>My Work</b> — a personal queue of what needs attention today.</li>
+  <li><b>Activity log</b> — a full audit trail of what changed and when.</li>
+  <li><b>Reports</b> — operational and financial reporting across the revenue cycle.</li>
+</ul>
+
+<h1 class="section">Dashboard</h1>
+<p>A single screen for where the money stands — claims in flight, outstanding AR, denials needing attention, and recent payment activity.</p>
+<ul>
+  <li>Claims status</li>
+  <li>AR aging</li>
+  <li>Denial rate</li>
+  <li>Recent payments</li>
+  <li>Provider productivity</li>
+</ul>
+
+<h1 class="section">Security</h1>
+<p>Sensitive data, handled carefully.</p>
+<ul>
+  <li><b>Permission-gated screens</b> — billing staff only see the modules their role allows.</li>
+  <li><b>Company-scoped records</b> — patient and financial data stays within its own company.</li>
+  <li><b>Full activity trail</b> — every change is logged for accountability and audit.</li>
+</ul>
+
+<h1 class="section">Technology</h1>
+<table class="info">
+  <tr><td class="k">Frontend</td><td>Next.js + React</td></tr>
+  <tr><td class="k">UI</td><td>Bootstrap-based design system</td></tr>
+  <tr><td class="k">Data</td><td>REST API integration</td></tr>
+  <tr><td class="k">Shared platform</td><td>Same login &amp; company model as CRM</td></tr>
+</table>
+
+<hr class="page-break">
+
+<h1 class="section">Thank You</h1>
+<p>Medical Billing — the full revenue cycle, without leaving your CRM.</p>
+
+</body>
+</html>
