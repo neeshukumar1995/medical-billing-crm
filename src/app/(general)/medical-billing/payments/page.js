@@ -90,7 +90,6 @@ const page = () => {
         <PermissionGuard permission="medical_payments.view" redirect={false}>
             <PageHeader>
                 <div className="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                    <button onClick={() => router.back()} className="btn btn-outline-primary"><i className="me-2">⬅️</i>Back</button>
                     {hasPermission('medical_payments.manage') && (
                         <Link href="/medical-billing/payments/create" className="btn btn-primary">
                             <FiPlus className="me-2" />

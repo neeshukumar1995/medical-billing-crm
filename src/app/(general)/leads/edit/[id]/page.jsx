@@ -864,13 +864,6 @@ const selectedSource = useMemo(() =>
   return (
     <PermissionGuard permission="edit-leads" redirect={true}>
       <PageHeader>
-      <button
-            onClick={() => router.back()}
-            className="btn btn-outline-primary"
-          >
-            <i className="me-2">⬅️</i>
-            Back
-          </button>
       </PageHeader>
 
       <div className='main-content'>

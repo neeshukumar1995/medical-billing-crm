@@ -78,10 +78,6 @@ const page = () => {
         <PermissionGuard permission="medical_denials.view" redirect={false}>
             <PageHeader>
                 <div className="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                    <button onClick={() => router.back()} className="btn btn-outline-secondary">
-                        <i className="me-2">⬅️</i>
-                        Back
-                    </button>
                 </div>
             </PageHeader>
             <div className='main-content'>

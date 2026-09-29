@@ -57,7 +57,6 @@ const page = () => {
         <PermissionGuard permission="medical_credentialing.view" redirect={false}>
             <PageHeader>
                 <div className="d-flex align-items-center gap-2 page-header-right-items-wrapper">
-                    <button onClick={() => router.back()} className="btn btn-outline-primary"><i className="me-2">⬅️</i>Back</button>
                     <Link href="/medical-billing/credentialing/followups" className="btn btn-outline-primary">Follow-ups</Link>
                     <Link href="/medical-billing/credentialing" className="btn btn-primary">Credentialing Records</Link>
                 </div>

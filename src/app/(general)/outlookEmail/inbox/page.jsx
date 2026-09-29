@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import { microsoftLogin } from '@/components/outlookconnectbutton';
 import { formatTime as formatClockTime } from '@/utils/formatDate';
+import BackButton from '@/components/shared/BackButton';
 
 const apiUrl   = process.env.NEXT_PUBLIC_API_URL || "http://crm-backend.test";
 const getToken = () => (typeof window !== "undefined" ? localStorage.getItem("access_token") : null);
@@ -255,6 +256,7 @@ export default function OutlookInboxPage() {
 
       <nav className="ol-nav">
         <div className="ol-nav-top">
+          <BackButton label="" />
           <span className="ol-nav-title">Outlook Users</span>
           <button className="ol-icon-btn" title="Refresh" onClick={fetchOutlookUsers} disabled={loadingUsers}>
             <RefreshIcon spinning={loadingUsers}/>

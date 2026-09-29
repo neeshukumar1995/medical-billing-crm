@@ -15,7 +15,7 @@ const Menus = () => {
     const [userPermissions, setUserPermissions] = useState([]);
     const [userRole, setUserRole] = useState('');
     const [loadingPermissions, setLoadingPermissions] = useState(true);
-    const { user, permissions, loading } = useUser();
+    const { user, permissions, loading, isPlatform } = useUser();
 
     const [followupCount, setFollowupCount] = useState(0);
 
@@ -56,7 +56,8 @@ const Menus = () => {
                 'reports': 'reports',
                 'settings': 'settings',
                 'dashboard': 'dashboard',
-                'companies': 'companies'
+                'companies': 'companies',
+                'clients': 'clients'
             };
 
             parent = pathToMenuMap[parent] || parent;
@@ -164,6 +165,7 @@ const Menus = () => {
             if (item.isCaption) return item;
             if (item.role && !item.role.includes(userRole)) return null;
             if (item.hideForRoles && item.hideForRoles.includes(userRole)) return null;
+            if (item.platformOnly && !isPlatform) return null;
             if (isGroup(item)) {
                 // A group's own permission (e.g. Master Data's) gates the whole
                 // branch; a wrapper group with no permission of its own (the
@@ -245,10 +247,6 @@ const Menus = () => {
     const CRM_ONLY_MENUS = ['sources', 'leads', 'reports'];
 
     const filteredMenuList = menuList.map(menu => {
-        if (menu.name === 'companies' && userRole !== 'superadmin') {
-            return null;
-        }
-
         if (CRM_ONLY_MENUS.includes(menu.name) && !crmEnabled) {
             return null;
         }

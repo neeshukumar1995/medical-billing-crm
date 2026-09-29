@@ -1,4 +1,7 @@
-// Static menu configuration with permission mappings
+// Static menu configuration with permission mappings.
+// Ordered by workflow — what you set up first sits higher: clients →
+// companies → roles/permissions → users → CRM (sources → leads → reports) →
+// medical billing → settings. Inside a module, "Create" comes before "List".
 export const menuConfig = [
     {
         id: 0,
@@ -9,31 +12,23 @@ export const menuConfig = [
         dropdownMenu: [],
         role: ["superadmin"],
     },
+    // Clients, Companies, Users and Sources open their list page directly (no
+    // dropdown); Create / Trashed etc. are buttons in that list page's header.
+    {
+        id: 9,
+        name: "clients",
+        path: "/clients/list",
+        icon: 'feather-grid',
+        permission: "view-clients",
+        dropdownMenu: []
+    },
     {
         id: 6,
         name: "companies",
-        path: "#",
+        path: "/companies/list",
         icon: 'feather-building',
         permission: "view-companies",
-        role: ["superadmin"],
-        dropdownMenu: [
-            {
-                id: 1,
-                name: "Create",
-                path: "/companies/create",
-                icon: 'feather-plus-circle',
-                permission: "create-companies",
-                subdropdownMenu: false
-            },
-            {
-                id: 2,
-                name: "List",
-                path: "/companies/list",
-                icon: 'feather-list',
-                permission: "view-companies",
-                subdropdownMenu: false
-            }
-        ]
+        dropdownMenu: []
     },
     {
         id: 1,
@@ -41,23 +36,8 @@ export const menuConfig = [
         path: "#",
         icon: 'feather-shield',
         permission: "view-roles",
+        // Permissions first — a role is built by picking permissions.
         dropdownMenu: [
-            {
-                id: 1,
-                name: "Create Role",
-                path: "/roles/create",
-                icon: 'feather-plus-circle',
-                permission: "create-roles",
-                subdropdownMenu: false
-            },
-            {
-                id: 2,
-                name: "Roles List",
-                path: "/roles/list",
-                icon: 'feather-list',
-                permission: "view-roles",
-                subdropdownMenu: false
-            },
             {
                 id: 3,
                 name: "Create Permission",
@@ -75,66 +55,40 @@ export const menuConfig = [
                 permission: "view-permissions",
                 role: ["superadmin"],
                 subdropdownMenu: false
+            },
+            {
+                id: 1,
+                name: "Create Role",
+                path: "/roles/create",
+                icon: 'feather-plus-circle',
+                permission: "create-roles",
+                subdropdownMenu: false
+            },
+            {
+                id: 2,
+                name: "Roles List",
+                path: "/roles/list",
+                icon: 'feather-list',
+                permission: "view-roles",
+                subdropdownMenu: false
             }
         ]
     },
     {
         id: 2,
         name: "users",
-        path: "#",
+        path: "/users/list",
         icon: 'feather-users',
         permission: "view-users",
-        dropdownMenu: [
-            {
-                id: 1,
-                name: "Create",
-                path: "/users/create",
-                icon: 'feather-user-plus',
-                permission: "create-users",
-                subdropdownMenu: false
-            },
-            {
-                id: 2,
-                name: "Users List",
-                path: "/users/list",
-                icon: 'feather-list',
-                permission: "view-users",
-                subdropdownMenu: false
-            },
-            {
-                id: 3,
-                name: "Trashed Data",
-                path: "/users/trashedUsers",
-                icon: 'feather-trash-2',
-                permission: "view-trashed-users",
-                subdropdownMenu: false
-            }
-        ]
+        dropdownMenu: []
     },
     {
         id: 7,
         name: "sources",
-        path: "#",
+        path: "/sources/list",
         icon: 'feather-file-text',
         permission: "view-sources",
-        dropdownMenu: [
-            {
-                id: 1,
-                name: "Sources",
-                path: "/sources/list",
-                icon: 'feather-list',
-                permission: "view-sources",
-                subdropdownMenu: false
-            },
-            {
-                id: 2,
-                name: "Create Source",
-                path: "/sources/create",
-                icon: 'feather-plus-circle',
-                permission: "create-sources",
-                subdropdownMenu: false
-            }
-        ]
+        dropdownMenu: []
     },
     {
         id: 3,
@@ -237,23 +191,6 @@ export const menuConfig = [
 //     dropdownMenu: [] // agar koi sub menu nahi hai
 // },
     {
-        id: 5,
-        name: "settings",
-        path: "#",
-        icon: 'feather-settings',
-        permission: "view-settings",
-        dropdownMenu: [
-            {
-                id: 1,
-                name: "Profile",
-                path: "/settings/ganeral",
-                icon: 'feather-user',
-                permission: "view-profile",
-                subdropdownMenu: false
-            }
-        ]
-    },
-    {
         id: 8,
         name: "medical billing",
         path: "#",
@@ -277,63 +214,24 @@ export const menuConfig = [
                 hideForRoles: ['superadmin', 'admin'],
                 subdropdownMenu: false
             },
+            // Kept as its own top-level group (not nested inside another
+            // group) — the sidebar CSS only styles nesting up to 3 levels of
+            // .nxl-submenu, and Master Data already needs its own 2nd level
+            // for ICD-10/CPT/etc; nesting it inside another group pushed
+            // those items to a 4th, unstyled level and broke the layout.
+            // Placed first: codes are set up before any billing work.
             {
-                id: 'activity',
-                name: "Employee Activity",
-                path: "/medical-billing/activity",
-                icon: 'feather-activity',
-                permission: "medical_patients.view",
-                subdropdownMenu: false
-            },
-            {
-                id: 'guide',
-                name: "Revenue Cycle Guide",
-                path: "/medical-billing/guide",
-                icon: 'feather-book-open',
-                permission: "medical_patients.view",
-                subdropdownMenu: false
-            },
-            {
-                id: 'grp-1',
-                name: "Patients & Care",
+                id: 6,
+                name: "Master Data",
                 path: "#",
-                icon: 'feather-users',
+                icon: 'feather-list',
+                permission: "medical_coding.manage",
                 subdropdownMenu: [
-                    {
-                        id: 1,
-                        name: "Patients",
-                        path: "/medical-billing/patients",
-                        icon: 'feather-user',
-                        permission: "medical_patients.view",
-                    },
-                    {
-                        id: 3,
-                        name: "Insurance Payers",
-                        path: "/medical-billing/insurance/payers",
-                        icon: 'feather-shield',
-                        permission: "medical_insurance.view",
-                    },
-                    {
-                        id: 4,
-                        name: "Appointments",
-                        path: "/medical-billing/appointments",
-                        icon: 'feather-clock',
-                        permission: "medical_appointments.manage",
-                    },
-                    {
-                        id: 5,
-                        name: "Encounters",
-                        path: "/medical-billing/encounters",
-                        icon: 'feather-clipboard',
-                        permission: "medical_encounters.manage",
-                    },
-                    {
-                        id: 6,
-                        name: "Eligibility Verification",
-                        path: "/medical-billing/eligibility",
-                        icon: 'feather-check-circle',
-                        permission: "medical_eligibility.view",
-                    },
+                    { id: 1, name: "ICD-10", path: "/medical-billing/master-data/icd10", icon: 'feather-file-text' },
+                    { id: 2, name: "CPT", path: "/medical-billing/master-data/cpt", icon: 'feather-file-text' },
+                    { id: 3, name: "HCPCS", path: "/medical-billing/master-data/hcpcs", icon: 'feather-file-text' },
+                    { id: 4, name: "Modifiers", path: "/medical-billing/master-data/modifiers", icon: 'feather-tag' },
+                    { id: 5, name: "Place of Service", path: "/medical-billing/master-data/pos", icon: 'feather-map-pin' },
                 ]
             },
             // Credentialing used to be one group with everything as flat
@@ -351,18 +249,18 @@ export const menuConfig = [
                 icon: 'feather-user-check',
                 subdropdownMenu: [
                     {
-                        id: 1,
-                        name: "All Providers",
-                        path: "/medical-billing/providers",
-                        icon: 'feather-users',
-                        permission: "medical_providers.view",
-                    },
-                    {
                         id: 2,
                         name: "Add Provider",
                         path: "/medical-billing/providers/create",
                         icon: 'feather-user-plus',
                         permission: "medical_providers.manage",
+                    },
+                    {
+                        id: 1,
+                        name: "All Providers",
+                        path: "/medical-billing/providers",
+                        icon: 'feather-users',
+                        permission: "medical_providers.view",
                     },
                 ]
             },
@@ -453,23 +351,49 @@ export const menuConfig = [
                     },
                 ]
             },
-            // Kept as its own top-level group (not nested inside another
-            // group) — the sidebar CSS only styles nesting up to 3 levels of
-            // .nxl-submenu, and Master Data already needs its own 2nd level
-            // for ICD-10/CPT/etc; nesting it inside another group pushed
-            // those items to a 4th, unstyled level and broke the layout.
+            // Front office, in visit order: payer → patient → eligibility →
+            // appointment → encounter (the encounter is what gets billed next).
             {
-                id: 6,
-                name: "Master Data",
+                id: 'grp-1',
+                name: "Patients & Care",
                 path: "#",
-                icon: 'feather-list',
-                permission: "medical_coding.manage",
+                icon: 'feather-users',
                 subdropdownMenu: [
-                    { id: 1, name: "ICD-10", path: "/medical-billing/master-data/icd10", icon: 'feather-file-text' },
-                    { id: 2, name: "CPT", path: "/medical-billing/master-data/cpt", icon: 'feather-file-text' },
-                    { id: 3, name: "HCPCS", path: "/medical-billing/master-data/hcpcs", icon: 'feather-file-text' },
-                    { id: 4, name: "Modifiers", path: "/medical-billing/master-data/modifiers", icon: 'feather-tag' },
-                    { id: 5, name: "Place of Service", path: "/medical-billing/master-data/pos", icon: 'feather-map-pin' },
+                    {
+                        id: 3,
+                        name: "Insurance Payers",
+                        path: "/medical-billing/insurance/payers",
+                        icon: 'feather-shield',
+                        permission: "medical_insurance.view",
+                    },
+                    {
+                        id: 1,
+                        name: "Patients",
+                        path: "/medical-billing/patients",
+                        icon: 'feather-user',
+                        permission: "medical_patients.view",
+                    },
+                    {
+                        id: 6,
+                        name: "Eligibility Verification",
+                        path: "/medical-billing/eligibility",
+                        icon: 'feather-check-circle',
+                        permission: "medical_eligibility.view",
+                    },
+                    {
+                        id: 4,
+                        name: "Appointments",
+                        path: "/medical-billing/appointments",
+                        icon: 'feather-clock',
+                        permission: "medical_appointments.manage",
+                    },
+                    {
+                        id: 5,
+                        name: "Encounters",
+                        path: "/medical-billing/encounters",
+                        icon: 'feather-clipboard',
+                        permission: "medical_encounters.manage",
+                    },
                 ]
             },
             {
@@ -490,6 +414,13 @@ export const menuConfig = [
                         name: "Claims",
                         path: "/medical-billing/claims",
                         icon: 'feather-file-text',
+                        permission: "medical_claims.view",
+                    },
+                    {
+                        id: 12,
+                        name: "Clearinghouse / Submission Status",
+                        path: "/medical-billing/submission-status",
+                        icon: 'feather-send',
                         permission: "medical_claims.view",
                     },
                     {
@@ -514,18 +445,63 @@ export const menuConfig = [
                         permission: "medical_ar.view",
                     },
                     {
-                        id: 12,
-                        name: "Clearinghouse / Submission Status",
-                        path: "/medical-billing/submission-status",
-                        icon: 'feather-send',
-                        permission: "medical_claims.view",
-                    },
-                    {
                         id: 13,
                         name: "Patient Statements",
                         path: "/medical-billing/patient-statements",
                         icon: 'feather-file-text',
                         permission: "medical_ar.view",
+                    },
+                ]
+            },
+            // Money in (bank account → receipts → deposits), then supplies
+            // (vendor → purchase order → stock received into inventory).
+            {
+                id: 'grp-4',
+                name: "Supply & Finance",
+                path: "#",
+                icon: 'feather-shopping-bag',
+                subdropdownMenu: [
+                    {
+                        id: 17,
+                        name: "Account Setup",
+                        path: "/medical-billing/accounts",
+                        icon: 'feather-lock',
+                        permission: "medical_accounts.view",
+                    },
+                    {
+                        id: 18,
+                        name: "Receipt Management",
+                        path: "/medical-billing/patient-payments",
+                        icon: 'feather-file-text',
+                        permission: "medical_receipts.view",
+                    },
+                    {
+                        id: 19,
+                        name: "Deposit Management",
+                        path: "/medical-billing/deposits",
+                        icon: 'feather-briefcase',
+                        permission: "medical_deposits.view",
+                    },
+                    {
+                        id: 14,
+                        name: "Vendors",
+                        path: "/medical-billing/vendors",
+                        icon: 'feather-globe',
+                        permission: "medical_inventory.view",
+                    },
+                    {
+                        id: 16,
+                        name: "Purchase Orders",
+                        path: "/medical-billing/purchase-orders",
+                        icon: 'feather-shopping-cart',
+                        permission: "medical_inventory.view",
+                    },
+                    {
+                        id: 15,
+                        name: "Inventory",
+                        path: "/medical-billing/inventory",
+                        icon: 'feather-grid',
+                        permission: "medical_inventory.view",
                     },
                 ]
             },
@@ -552,55 +528,38 @@ export const menuConfig = [
                 ]
             },
             {
-                id: 'grp-4',
-                name: "Supply & Finance",
-                path: "#",
-                icon: 'feather-shopping-bag',
-                subdropdownMenu: [
-                    {
-                        id: 14,
-                        name: "Vendors",
-                        path: "/medical-billing/vendors",
-                        icon: 'feather-globe',
-                        permission: "medical_inventory.view",
-                    },
-                    {
-                        id: 15,
-                        name: "Inventory",
-                        path: "/medical-billing/inventory",
-                        icon: 'feather-grid',
-                        permission: "medical_inventory.view",
-                    },
-                    {
-                        id: 16,
-                        name: "Purchase Orders",
-                        path: "/medical-billing/purchase-orders",
-                        icon: 'feather-shopping-cart',
-                        permission: "medical_inventory.view",
-                    },
-                    {
-                        id: 17,
-                        name: "Account Setup",
-                        path: "/medical-billing/accounts",
-                        icon: 'feather-lock',
-                        permission: "medical_accounts.view",
-                    },
-                    {
-                        id: 18,
-                        name: "Receipt Management",
-                        path: "/medical-billing/patient-payments",
-                        icon: 'feather-file-text',
-                        permission: "medical_receipts.view",
-                    },
-                    {
-                        id: 19,
-                        name: "Deposit Management",
-                        path: "/medical-billing/deposits",
-                        icon: 'feather-briefcase',
-                        permission: "medical_deposits.view",
-                    },
-                ]
+                id: 'activity',
+                name: "Employee Activity",
+                path: "/medical-billing/activity",
+                icon: 'feather-activity',
+                permission: "medical_patients.view",
+                subdropdownMenu: false
             },
+            {
+                id: 'guide',
+                name: "Revenue Cycle Guide",
+                path: "/medical-billing/guide",
+                icon: 'feather-book-open',
+                permission: "medical_patients.view",
+                subdropdownMenu: false
+            },
+        ]
+    },
+    {
+        id: 5,
+        name: "settings",
+        path: "#",
+        icon: 'feather-settings',
+        permission: "view-settings",
+        dropdownMenu: [
+            {
+                id: 1,
+                name: "Profile",
+                path: "/settings/ganeral",
+                icon: 'feather-user',
+                permission: "view-profile",
+                subdropdownMenu: false
+            }
         ]
     },
 

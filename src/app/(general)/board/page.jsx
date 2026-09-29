@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { IndianRupee, Search } from "lucide-react";
+import BackButton from "@/components/shared/BackButton";
 
 import {
   DndContext,
@@ -230,6 +231,8 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-light">
       <div className="container-fluid px-4 py-4">
+
+        <BackButton className="mb-3" />
 
         {/* HEADER */}
         <div className="d-flex align-items-center justify-content-between mb-4">

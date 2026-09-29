@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import crmInstance from '@/utils/crmInstance';
 import Swal from 'sweetalert2';
 import { formatDate, formatTime } from '@/utils/formatDate';
+import BackButton from '@/components/shared/BackButton';
 
 // ══════════════════════════════════════════════════════════════════
 //  SVG ICONS
@@ -590,6 +591,7 @@ export default function ZoomMeetingPage() {
         {/* ── Header ──────────────────────────────────────────── */}
         <div className="zm-page-hdr">
           <div className="zm-hdr-left">
+            <BackButton />
             <div className="zm-hdr-ico"><Icon.Video /></div>
             <div>
               <h1 className="zm-page-title">Zoom Meetings</h1>

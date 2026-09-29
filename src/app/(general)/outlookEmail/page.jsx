@@ -5,6 +5,7 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { microsoftLogin } from '@/components/outlookconnectbutton';
 import { formatTime as formatClockTime } from '@/utils/formatDate';
+import BackButton from '@/components/shared/BackButton';
 
 const apiUrl   = process.env.NEXT_PUBLIC_API_URL || "http://crm-backend.test";
 const getToken = () => (typeof window !== "undefined" ? localStorage.getItem("access_token") : null);
@@ -471,6 +472,7 @@ export default function OutlookPage() {
 
       {/* NAV */}
       <nav className="ol-nav" style={{ marginTop: sessionExpired ? 48 : 0 }}>
+        <BackButton className="mb-2 align-self-start" />
         <button className="ol-new-btn" onClick={() => { setReplyTo(null); setForm({to:"",cc:"",subject:"",body:""}); setCompose(true); }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 1a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM11 2.5a2.5 2.5 0 1 0 5 0 2.5 2.5 0 0 0-5 0zm.854 3.646-7 7a.5.5 0 0 0-.146.354V15.5a.5.5 0 0 0 .5.5h2.5a.5.5 0 0 0 .354-.146l7-7a.5.5 0 0 0 0-.708l-2.5-2.5a.5.5 0 0 0-.708 0z"/></svg>
           New mail

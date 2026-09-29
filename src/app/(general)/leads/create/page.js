@@ -374,13 +374,6 @@ const LeadCreatePage = () => {
   return (
     <PermissionGuard permission="create-leads" redirect={false}>
       <PageHeader>
-        <button
-            onClick={() => router.back()}
-            className="btn btn-outline-primary"
-          >
-            <i className="me-2">⬅️</i>
-            Back
-          </button>
 
       </PageHeader>
 

@@ -12,8 +12,7 @@ import DialPad from '../DialPad';
  
 import { NavigationContext } from '@/contentApi/navigationProvider';
 import { StickyNotesContext } from '@/contentApi/stickyNotesProvider'
-import crmInstance from '@/utils/crmInstance';
-import { useUser } from '@/context/UserContext';
+import CompanySwitcher from './CompanySwitcher';
 
 import '@/styles/Header.css'
 
@@ -24,16 +23,6 @@ const Header = () => {
     const [navigationExpend, setNavigationExpend] = useState(false)
     const miniButtonRef = useRef(null);
     const expendButtonRef = useRef(null);
-    // ✅ "/me" ab yahan alag se call nahi hota — shared UserContext se role milta hai
-    const { role: userRole, user } = useUser()
-    const [companies, setCompanies] = useState([])
-    const [selectedCompany, setSelectedCompany] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return localStorage.getItem('companyId') ? JSON.parse(localStorage.getItem('companyId')) : null
-        }
-        return null
-    })
-    const [isCompanyChanging, setIsCompanyChanging] = useState(false)
     const [showDialPad, setShowDialPad] = useState(false)
     const [isDarkTheme, setIsDarkTheme] = useState(false)
 
@@ -49,46 +38,6 @@ const Header = () => {
             setIsDarkTheme(false)
         }
     }
-
-    // ✅ selectedCompany ko shared user context se sync karo (jab tak koi
-    // company already localStorage se selected na ho)
-    useEffect(() => {
-        if (user?.company_id && !selectedCompany) {
-            setSelectedCompany(user.company_id)
-        }
-    }, [user, selectedCompany])
-
-    // Superadmin sees every company. A regular user only sees the switcher
-    // if an owner/superadmin has explicitly assigned them to more than one
-    // company (backend: GET /my-companies) — falls back to no switcher if
-    // that endpoint isn't available yet.
-    useEffect(() => {
-        if (!userRole) return
-
-        const fetchCompanies = async () => {
-            try {
-                if (userRole === 'superadmin') {
-                    const { data } = await crmInstance.get('/companies')
-                    if (Array.isArray(data)) {
-                        setCompanies(data)
-                    } else if (data.status && data.data) {
-                        setCompanies(data.data)
-                    }
-                    return
-                }
-
-                const { data } = await crmInstance.get('/my-companies')
-                const list = Array.isArray(data) ? data : (data?.data || [])
-                if (list.length > 1) setCompanies(list)
-            } catch (error) {
-                if (userRole === 'superadmin') {
-                    console.error('Error fetching companies:', error)
-                }
-            }
-        }
-
-        fetchCompanies()
-    }, [userRole])
 
     useEffect(() => {
         const handleResize = () => {
@@ -195,19 +144,6 @@ const Header = () => {
         document.querySelector("body").classList.remove("full-screen-helper")
     }
 
-    const handleCompanyChange = (e) => {
-        const newCompanyId = parseInt(e.target.value)
-        setIsCompanyChanging(true)
-        localStorage.setItem('companyId', JSON.stringify(newCompanyId))
-        // Also update user data in localStorage
-        const userData = JSON.parse(localStorage.getItem('user') || '{}')
-        if (userData && Object.keys(userData).length > 0) {
-            userData.company_id = newCompanyId
-            localStorage.setItem('user', JSON.stringify(userData))
-        }
-        setSelectedCompany(newCompanyId)
-        window.location.reload() // Refresh the page to ensure all data is updated
-    }
 
 
 
@@ -251,27 +187,8 @@ const Header = () => {
                 <div className="header-right ms-auto">
                     <div className="d-flex align-items-center">
 
-                        {/* Company selector: superadmin always, others only when assigned to 2+ companies */}
-                        {(userRole === 'superadmin' || companies.length > 1) && (
-                            <div className="nxl-h-item">
-                                <select
-                                    className="form-select form-select-sm ol-company-select"
-                                    value={selectedCompany || ''}
-                                    onChange={handleCompanyChange}
-                                    disabled={isCompanyChanging}
-                                >
-                                    {companies.length > 0 ? (
-                                        companies.map(company => (
-                                            <option key={company.id} value={company.id}>
-                                                {company.name}
-                                            </option>
-                                        ))
-                                    ) : (
-                                        <option disabled>Loading companies...</option>
-                                    )}
-                                </select>
-                            </div>
-                        )}
+                        {/* Client → company switcher (hidden when the user has only one company) */}
+                        <CompanySwitcher />
 
                         {/* Grouped toolbar: fullscreen + notifications + profile, Outlook-style pill */}
                         {/* Grouped toolbar: fullscreen + notifications + profile, Outlook-style pill */}

@@ -12,6 +12,8 @@ export const logout = async () => {
     localStorage.removeItem("user");
     localStorage.removeItem("role");
     localStorage.removeItem("isLoggedIn");
+    // Header client choice — the next user picks their own.
+    localStorage.removeItem("selectedClientKey");
     window.location.href = "/";
   }
 };

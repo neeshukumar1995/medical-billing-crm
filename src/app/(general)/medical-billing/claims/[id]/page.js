@@ -93,10 +93,6 @@ const page = () => {
                             <FiSend className="me-2" /> Submit
                         </button>
                     )}
-                    <button onClick={() => router.back()} className="btn btn-outline-secondary">
-                        <i className="me-2">⬅️</i>
-                        Back
-                    </button>
                 </div>
             </PageHeader>
             <div className='main-content'>

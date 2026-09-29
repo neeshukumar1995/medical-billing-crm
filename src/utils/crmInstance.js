@@ -9,7 +9,7 @@ const crmInstance = axios.create({
 
 // ✅ Routes that should NEVER trigger auth-redirect / refresh-token flow
 // (these are called on the login page itself, before any token exists)
-const PUBLIC_ROUTES = ["/companies/", "/login", "/refresh"];
+const PUBLIC_ROUTES = ["/login", "/refresh"];
 
 const isPublicRoute = (url = "") => PUBLIC_ROUTES.some((r) => url.includes(r));
 
@@ -30,13 +30,12 @@ crmInstance.interceptors.request.use((config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  // The header's existing company switcher (superadmin-only) already stores
-  // the active company under this key for the rest of the app (leads,
-  // reports, etc). Reuse the same value here instead of a second selector —
-  // the backend's `company.scope` middleware only honors this header for a
-  // user whose role is actually 'superadmin', so it's safe to send
-  // unconditionally; a non-superadmin's own request just has it ignored.
-  if (typeof window !== "undefined" && (config.url || "").includes("/medical-billing")) {
+  // The header's client/company switcher stores the active company under
+  // this key for the rest of the app. Send it on every request: the
+  // backend's `company.scope` middleware only honors it when the user may
+  // access that company (User::canAccessCompany), so a stale or forged value
+  // just falls back to the user's own company.
+  if (typeof window !== "undefined") {
     const rawCompanyId = localStorage.getItem("companyId");
     if (rawCompanyId) {
       try {
@@ -79,6 +78,7 @@ const forceLogout = () => {
   localStorage.removeItem("permission");
   localStorage.removeItem("role_id");
   localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("selectedClientKey");
 
   // ✅ KEY FIX: prevent infinite reload loop
   if (!isOnLoginPage()) {

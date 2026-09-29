@@ -11,6 +11,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import Select from 'react-select'
 import { useUser } from '@/context/UserContext'
+import { sameClientCompanyOptions } from '@/utils/companyOptions'
 
 const page = () => {
   const { handleImageUpload, uploadedImage } = useImageUpload()
@@ -21,7 +22,9 @@ const page = () => {
   const [loadingRoles, setLoadingRoles] = useState(true)
   const router = useRouter()
   const [companyId, setCompanyId] = useState(() => localStorage.getItem('companyId'))
-  const { role: userRole } = useUser()
+  const { isPlatform, access } = useUser()
+  // Platform and client-level admins can give a user access to more companies.
+  const canAssignCompanies = isPlatform || access?.scope === 'client'
 
   // Owner/superadmin can grant a user access to more than one company's data.
   // The company the form is being submitted from (companyId above) is always
@@ -30,7 +33,7 @@ const page = () => {
   const [selectedCompanies, setSelectedCompanies] = useState([])
 
   useEffect(() => {
-    if (userRole !== 'superadmin') return
+    if (!canAssignCompanies) return
     const fetchCompanies = async () => {
       try {
         const { data } = await crmInstance.get('/companies')
@@ -41,7 +44,7 @@ const page = () => {
       }
     }
     fetchCompanies()
-  }, [userRole])
+  }, [canAssignCompanies])
 
   // Custom file handler
   const handleFileSelect = (e) => {
@@ -197,13 +200,6 @@ const page = () => {
     <PermissionGuard permission="create-users" redirect={false}>
       <PageHeader>
         {/* <UsersCreateHeader /> */}
-          <button
-            onClick={() => router.back()}
-            className="btn btn-outline-primary"
-          >
-            <i className="me-2">⬅️</i>
-            Back
-          </button>
       </PageHeader>
       <div className='main-content'>
         <div className='row'>
@@ -496,7 +492,7 @@ const page = () => {
 
                     <input type="hidden" name="company_id" value={formData.company_id} />
 
-                    {userRole === 'superadmin' && (
+                    {canAssignCompanies && (
                       <>
                       <hr className="my-4" />
                       <div className="mb-4">
@@ -512,9 +508,7 @@ const page = () => {
                             isMulti
                             isSearchable
                             placeholder="Select other companies this user can access..."
-                            options={companies
-                              .filter(c => Number(c.id) !== Number(formData.company_id))
-                              .map(c => ({ value: c.id, label: c.name }))}
+                            options={sameClientCompanyOptions(companies, formData.company_id)}
                             value={selectedCompanies}
                             onChange={(opts) => setSelectedCompanies(opts || [])}
                             isDisabled={isLoading}

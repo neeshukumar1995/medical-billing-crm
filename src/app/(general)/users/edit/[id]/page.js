@@ -16,6 +16,7 @@ import styles from '@/components/users/UserEditForm.module.css';
 import PermissionGuard from '@/components/shared/PermissionGuard';
 import { decryptId } from '@/utils/decryptId'
 import { useUser } from '@/context/UserContext'
+import { sameClientCompanyOptions } from '@/utils/companyOptions'
 
 /**
  * User Edit Page Component
@@ -41,7 +42,10 @@ const UserEditPage = ({ params }) => {
     }
     return null
   });
-  const { role: userRole } = useUser();
+  const { isPlatform, access } = useUser();
+  // Roles belong to a company — load the edited user's own company's roles,
+  // not the active company's (they differ for multi-company staff).
+  const [rolesCompanyId, setRolesCompanyId] = useState(null);
 
   // Owner/superadmin can grant this user access to more than one company's data.
   const [companies, setCompanies] = useState([]);
@@ -127,15 +131,18 @@ const UserEditPage = ({ params }) => {
         employee_id: userData.employee_id || '',
         password: '',
         confirmPassword: '',
-        company_id: companyId ? JSON.parse(companyId) : userData.company_id || ''
+        // The user's own (primary) company — saving must not move a
+        // multi-company user into whichever company is active right now.
+        company_id: userData.company_id || (companyId ? JSON.parse(companyId) : '')
       });
+      setRolesCompanyId(userData.company_id || (companyId ? JSON.parse(companyId) : null));
 
-      // Prefill companies already assigned to this user (beyond the active one)
-      const activeCompanyId = companyId ? JSON.parse(companyId) : userData.company_id;
+      // Prefill companies already assigned to this user (beyond the primary one)
+      const primaryCompanyId = userData.company_id || (companyId ? JSON.parse(companyId) : null);
       const assignedCompanies = Array.isArray(userData.companies) ? userData.companies : [];
       setSelectedCompanies(
         assignedCompanies
-          .filter(c => Number(c.id) !== Number(activeCompanyId))
+          .filter(c => Number(c.id) !== Number(primaryCompanyId))
           .map(c => ({ value: c.id, label: c.name }))
       );
 
@@ -154,7 +161,7 @@ const UserEditPage = ({ params }) => {
   const fetchRoles = useCallback(async () => {
     try {
       setLoadingRoles(true);
-      const cid = companyId ? JSON.parse(companyId) : null;
+      const cid = rolesCompanyId;
       if (!cid) {
         setRoles(DEFAULT_ROLES);
         setLoadingRoles(false);
@@ -170,7 +177,7 @@ const UserEditPage = ({ params }) => {
     } finally {
       setLoadingRoles(false);
     }
-  }, [companyId]);
+  }, [rolesCompanyId]);
 
   /**
    * Handles form submission
@@ -237,7 +244,7 @@ const UserEditPage = ({ params }) => {
           console.log(key, value instanceof File ? `File: ${value.name}` : value);
         }
 
-        response = await crmInstance.put(`/users/${parsedCompanyId}/${actualId}`, formDataToSend, {
+        response = await crmInstance.put(`/users/${formData.company_id || parsedCompanyId}/${actualId}`, formDataToSend, {
           headers: { 'Content-Type': 'multipart/form-data' },
           timeout: 30000 // 30 second timeout
         });
@@ -258,7 +265,7 @@ const UserEditPage = ({ params }) => {
         // Debug: Log update data
         console.log('Edit update data:', updateData);
 
-        response = await crmInstance.put(`/users/${parsedCompanyId}/${actualId}`, updateData, {
+        response = await crmInstance.put(`/users/${formData.company_id || parsedCompanyId}/${actualId}`, updateData, {
           headers: { 'Content-Type': 'application/json' },
           timeout: 30000
         });
@@ -348,7 +355,7 @@ const UserEditPage = ({ params }) => {
 
     // ✅ Use crmInstance.post with _method for PUT
     response = await crmInstance.post(
-      `/users/${parsedCompanyId}/${actualId}`,
+      `/users/${formData.company_id || parsedCompanyId}/${actualId}`,
       formDataToSend,
       {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -375,11 +382,14 @@ const UserEditPage = ({ params }) => {
   }
 }, [formData, selectedFile, selectedCompanies, resolvedParams.id, validateForm, router]);
 
+  // Platform and client-level admins can give a user access to more companies.
+  const canAssignCompanies = isPlatform || access?.scope === 'client';
+
   /**
-   * Fetches the full companies list (superadmin only) so they can assign extras
+   * Fetches the companies the admin can see so they can assign extras
    */
   const fetchCompanies = useCallback(async () => {
-    if (userRole !== 'superadmin') return;
+    if (!canAssignCompanies) return;
     try {
       const { data } = await crmInstance.get('/companies');
       const list = Array.isArray(data) ? data : (data?.data || []);
@@ -387,7 +397,7 @@ const UserEditPage = ({ params }) => {
     } catch (err) {
       console.error('Failed to fetch companies:', err);
     }
-  }, [userRole]);
+  }, [canAssignCompanies]);
 
   // Effects
   useEffect(() => {
@@ -408,13 +418,6 @@ const UserEditPage = ({ params }) => {
   return (
     <PermissionGuard permission="edit-users" redirect={false}>
       <PageHeader>
-        <button
-          onClick={() => router.back()}
-          className="btn btn-outline-primary"
-        >
-          <i className="me-2">⬅️</i>
-          Back
-        </button>
       </PageHeader>
       <div className="main-content">
         <div className="row">
@@ -456,10 +459,8 @@ const UserEditPage = ({ params }) => {
                       roles={roles}
                       loadingRoles={loadingRoles}
                       disabled={saving}
-                      showCompanyAssignment={userRole === 'superadmin'}
-                      companyOptions={companies
-                        .filter(c => Number(c.id) !== Number(formData.company_id))
-                        .map(c => ({ value: c.id, label: c.name }))}
+                      showCompanyAssignment={canAssignCompanies}
+                      companyOptions={sameClientCompanyOptions(companies, formData.company_id)}
                       selectedCompanies={selectedCompanies}
                       onCompaniesChange={setSelectedCompanies}
                     />

@@ -10,12 +10,13 @@ import { FiSave, FiUser, FiFileText, FiShield, FiCheckCircle, FiEdit3, FiX } fro
 import { useUser } from '@/context/UserContext'
 import PermissionGuard from '@/components/shared/PermissionGuard';
 import { decryptId } from '@/utils/decryptId'
+import { canGrantPermission } from '@/utils/permissionAccess'
 
 const EditRolePage = () => {
     const router = useRouter()
     const { id } = useParams()
     const actualId = useMemo(() => decryptId(id), [id])
-    const { role } = useUser()
+    const { role, permissions: heldPermissions } = useUser()
 
     const [formData, setFormData] = useState({
         name: '',
@@ -285,16 +286,10 @@ const EditRolePage = () => {
                                                 ) : (
                                                     <div className="row g-3">
                                                         {permissions.filter(permission =>
-                                                            role === 'superadmin' || ![
-                                                                'view-companies',
-                                                                'create-companies',
-                                                                'edit-companies',
-                                                                'delete-companies',
-                                                                'view-permissions',
-                                                                'create-permissions',
-                                                                'edit-permissions',
-                                                                'delete-permissions'
-                                                            ].includes(permission.name)
+                                                            canGrantPermission(permission.name, {
+                                                                isSuperadmin: role === 'superadmin',
+                                                                heldPermissions,
+                                                            })
                                                         ).map(permission => (
                                                             <div key={permission.id} className="col-md-4 col-sm-6">
                                                                 <div className="form-check p-3 rounded-3 hover-shadow d-flex align-items-center"

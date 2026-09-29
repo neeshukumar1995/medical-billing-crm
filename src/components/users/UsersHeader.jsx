@@ -1,5 +1,5 @@
 import React from 'react'
-import { FiBarChart, FiBriefcase, FiDollarSign, FiEye, FiFilter, FiFlag, FiPaperclip, FiPlus, FiUserCheck, FiUserMinus, FiUsers } from 'react-icons/fi'
+import { FiBarChart, FiBriefcase, FiDollarSign, FiEye, FiFilter, FiFlag, FiPaperclip, FiPlus, FiTrash2, FiUserCheck, FiUserMinus, FiUsers } from 'react-icons/fi'
 import { BsFiletypeCsv, BsFiletypeExe, BsFiletypePdf, BsFiletypeTsx, BsFiletypeXml, BsPrinter } from 'react-icons/bs';
 import Link from 'next/link';
 import { usePermissions } from '@/hooks/usePermissions';
@@ -51,6 +51,14 @@ const UsersHeader = ({ onSaveDraft, selectedUsersCount = 0 }) => {
        )}
      </button>
    )}
+
+  {/* Trashed users (used to be a sidebar sub-menu item) */}
+  {hasPermission('view-trashed-users') && (
+    <Link href="/users/trashedUsers" className="btn btn-outline-secondary">
+      <FiTrash2 size={16} className="me-2" />
+      <span>Trashed Data</span>
+    </Link>
+  )}
 
   {/* Create User Button - Primary Color */}
   {hasPermission('create-users') && (

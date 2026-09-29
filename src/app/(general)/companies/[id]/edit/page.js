@@ -10,6 +10,7 @@ import PermissionGuard from '@/components/shared/PermissionGuard'
 import Link from 'next/link'
 import { decryptId } from '@/utils/decryptId'
 import { COMPANY_STATUS_OPTIONS } from '@/constants/companyStatus'
+import ClientSelect from '@/components/clients/ClientSelect'
 
 
 const page = () => {
@@ -23,6 +24,7 @@ const page = () => {
 
   // Form states
   const [formData, setFormData] = useState({
+    client_id: '',
     name: '',
     address: '',
     title: '',
@@ -89,6 +91,7 @@ const page = () => {
 
       setCompany(companyData)
       setFormData({
+        client_id: companyData.client_id ?? '',
         name: companyData.name || '',
         address: companyData.address || '',
         title: companyData.title || '',
@@ -121,6 +124,7 @@ const page = () => {
       formDataToSend.append('address', formData.address || '')
       formDataToSend.append('title', formData.title || '')
       formDataToSend.append('status', formData.status)
+      formDataToSend.append('client_id', formData.client_id || '')
       formDataToSend.append('crm_enabled', formData.crm_enabled ? '1' : '0')
       formDataToSend.append('medical_billing_enabled', formData.medical_billing_enabled ? '1' : '0')
       if (formData.logo) {
@@ -185,12 +189,7 @@ const page = () => {
 
   return (
     <PermissionGuard permission="edit-companies" redirect={false}>
-      <PageHeader>
-        <Link href="/companies/list" className="btn btn-outline-secondary">
-          <FiArrowLeft size={16} className='me-2' />
-          <span>Back</span>
-        </Link>
-      </PageHeader>
+      <PageHeader />
       <div className='main-content'>
         <div className='row'>
           <div className="col-lg-12">
@@ -204,6 +203,11 @@ const page = () => {
 
                 <form onSubmit={handleSubmit}>
                   <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Client</label>
+                    <ClientSelect value={formData.client_id} onChange={handleInputChange} disabled={saving} />
+                  </div>
+                  <div className="col-md-6 mb-3" />
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Company Name <span className="text-danger">*</span></label>
                     <div className="position-relative">
