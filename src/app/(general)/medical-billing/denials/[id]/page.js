@@ -9,6 +9,7 @@ import PermissionGuard from '@/components/shared/PermissionGuard'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
 import { decryptId } from '@/utils/decryptId'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = {
     open: 'danger', assigned: 'warning', in_review: 'info', corrected: 'primary',
@@ -104,7 +105,7 @@ const page = () => {
                                         <div className="row g-4">
                                             <Field label="Patient" value={denial.claim?.patient ? `${denial.claim.patient.first_name} ${denial.claim.patient.last_name}` : null} />
                                             <Field label="Denial Code" value={denial.denial_code} />
-                                            <Field label="Denial Date" value={denial.denial_date} />
+                                            <Field label="Denial Date" value={formatDate(denial.denial_date)} />
                                             <Field label="Assigned To" value={denial.assigned_to?.name} />
                                             <div className="col-md-12">
                                                 <div className="text-muted small">Reason</div>
@@ -164,7 +165,7 @@ const page = () => {
                                                 {denial.actions.map(a => (
                                                     <li key={a.id} className="mb-2 pb-2 border-bottom">
                                                         <span className="fw-semibold text-capitalize">{a.action_type.replace('_', ' ')}</span>
-                                                        <span className="text-muted small ms-2">{a.action_date}</span>
+                                                        <span className="text-muted small ms-2">{formatDate(a.action_date)}</span>
                                                         {a.action_note && <div className="text-muted small">{a.action_note}</div>}
                                                         {a.performed_by && <div className="text-muted small">by {a.performed_by.name}</div>}
                                                     </li>

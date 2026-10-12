@@ -18,6 +18,7 @@ import PeriodFilter, { periodLabel } from '@/components/shared/PeriodFilter'
 import ClientAdminsSection from '@/components/clients/ClientAdminsSection'
 import ClientActivitySection from '@/components/clients/ClientActivitySection'
 import LinkCompaniesModal from '@/components/clients/LinkCompaniesModal'
+import { HOME_PATH } from '@/constants/portalScope'
 
 const InfoRow = ({ icon: Icon, label, value }) => (
   <div className="d-flex align-items-start gap-2 mb-3">
@@ -83,7 +84,7 @@ const CompanyCard = ({ company }) => {
             <button
               type="button"
               className="btn btn-sm btn-primary"
-              onClick={(e) => { e.stopPropagation(); switchCompany(company.id, '/dashboard') }}
+              onClick={(e) => { e.stopPropagation(); switchCompany(company.id, HOME_PATH) }}
               title="Work in this company"
             >
               Open
@@ -152,7 +153,6 @@ const ClientConsolidated = ({ overview, period, onPeriodChange, onOpenCompany })
                     <th className="text-end">Collected</th>
                     <th className="text-end">AR Balance</th>
                     <th className="text-end">Users</th>
-                    <th className="text-end">Leads</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -172,7 +172,6 @@ const ClientConsolidated = ({ overview, period, onPeriodChange, onOpenCompany })
                       <td className="text-end">{money(Number(row.insurance_paid) + Number(row.patient_paid))}</td>
                       <td className="text-end text-danger">{money(row.ar_balance)}</td>
                       <td className="text-end">{num(row.users)}</td>
-                      <td className="text-end">{num(row.leads)}</td>
                       <td className="text-end">
                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => onOpenCompany(row.id)}
                           title="Switch the portal to this company">
@@ -292,7 +291,6 @@ const page = () => {
               'Patient Paid': row.patient_paid,
               'AR Balance': row.ar_balance,
               'Users': row.users,
-              'Leads': row.leads,
             }
           }),
         },
@@ -382,7 +380,7 @@ const page = () => {
               overview={overview}
               period={period}
               onPeriodChange={setPeriod}
-              onOpenCompany={(companyId) => switchCompany(companyId, '/dashboard')}
+              onOpenCompany={(companyId) => switchCompany(companyId, HOME_PATH)}
             />
 
             <div className="d-flex align-items-center justify-content-between mb-3">

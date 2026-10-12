@@ -4,11 +4,9 @@ import {
     FiAlignLeft, FiArrowLeft, FiArrowRight, FiMaximize, FiMinimize, FiFileText,
 } from "react-icons/fi";
 
-import Notifications from './Notifications';
 import MedicalNotifications from './MedicalNotifications';
 import ProfileModal from './ProfileModal';
 
-import DialPad from '../DialPad';
  
 import { NavigationContext } from '@/contentApi/navigationProvider';
 import { StickyNotesContext } from '@/contentApi/stickyNotesProvider'
@@ -23,7 +21,6 @@ const Header = () => {
     const [navigationExpend, setNavigationExpend] = useState(false)
     const miniButtonRef = useRef(null);
     const expendButtonRef = useRef(null);
-    const [showDialPad, setShowDialPad] = useState(false)
     const [isDarkTheme, setIsDarkTheme] = useState(false)
 
     const handleThemeMode = (type) => {
@@ -69,23 +66,6 @@ const Header = () => {
         return () => {
             window.removeEventListener('resize', handleResize);
         };
-    }, []);
-
-    // Listen to call status updates
-    useEffect(() => {
-        if (typeof window !== 'undefined' && window.Echo) {
-            window.Echo.channel('call-status')
-                .listen('CallStatusUpdated', (e) => {
-                    console.log('CallStatusUpdated event received:', e);
-                    setCallStatus(e.status);
-                });
-
-            return () => {
-                if (window.Echo) {
-                    window.Echo.leave('call-status');
-                }
-            };
-        }
     }, []);
 
     const handleNavigationExpendUp = (e, pram) => {
@@ -212,10 +192,8 @@ const Header = () => {
 
                             <div className="ol-toolbar-divider" />
 
-                            <div className="ol-toolbar-item">
-                                <Notifications />
-                            </div>
-
+                            {/* Medical billing notifications only — the CRM (lead
+                                follow-up) bell is gone with the BD side. */}
                             <div className="ol-toolbar-item">
                                 <MedicalNotifications />
                             </div>
@@ -231,9 +209,6 @@ const Header = () => {
                 {/* <!--! [End] Header Right !--> */}
             </div>
 
-
-            {/* Dial Pad Popup */}
-            <DialPad show={showDialPad} onClose={() => setShowDialPad(false)} />
         </header>
     )
 }

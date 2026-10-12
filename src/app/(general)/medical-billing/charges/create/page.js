@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Swal from 'sweetalert2'
 import { FiSave, FiDollarSign, FiPlus, FiTrash2 } from 'react-icons/fi'
 import PermissionGuard from '@/components/shared/PermissionGuard'
+import { formatDate } from '@/utils/formatDate'
 
 const emptyItem = { codeType: 'cpt', cpt_code_id: '', hcpcs_code_id: '', modifier_1: '', modifier_2: '', units: 1, charge_amount: '', diagnosis_pointer: '', place_of_service_id: '' }
 
@@ -114,7 +115,7 @@ const page = () => {
                                                 <option value="">Select encounter</option>
                                                 {encounters.map(enc => (
                                                     <option key={enc.id} value={enc.id}>
-                                                        {enc.encounter_number} — {enc.patient ? `${enc.patient.first_name} ${enc.patient.last_name}` : ''} ({enc.encounter_date})
+                                                        {enc.encounter_number} — {enc.patient ? `${enc.patient.first_name} ${enc.patient.last_name}` : ''} ({formatDate(enc.encounter_date)})
                                                     </option>
                                                 ))}
                                             </select>

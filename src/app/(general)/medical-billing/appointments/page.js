@@ -10,6 +10,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { usePermissions } from '@/hooks/usePermissions'
 import AppointmentModal from '@/components/medicalBilling/AppointmentModal'
+import { formatDateAndTime } from '@/utils/formatDate'
 
 const STATUS_COLORS = {
     scheduled: 'primary',
@@ -154,7 +155,7 @@ const page = () => {
                                             ) : (
                                                 appointments.map((a) => (
                                                     <tr key={a.id}>
-                                                        <td>{a.appointment_date} {a.appointment_time}</td>
+                                                        <td>{formatDateAndTime(a.appointment_date, a.appointment_time)}</td>
                                                         <td>{a.patient ? `${a.patient.first_name} ${a.patient.last_name}` : 'N/A'}</td>
                                                         <td>{a.provider ? `${a.provider.first_name} ${a.provider.last_name}` : 'N/A'}</td>
                                                         <td className="text-capitalize">{a.appointment_type || 'N/A'}</td>

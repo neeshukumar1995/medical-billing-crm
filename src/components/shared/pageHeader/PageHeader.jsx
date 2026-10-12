@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import BackButton from '@/components/shared/BackButton'
 
 // Landing pages where "back" has nowhere sensible to go.
-const NO_BACK_PATHS = ['/', '/dashboard']
+const NO_BACK_PATHS = ['/', '/dashboard', '/medical-billing/dashboard']
 
 // "purchase-orders" -> "Purchase Orders", "patient-payments" -> "Patient Payments"
 const formatSegment = (segment) =>

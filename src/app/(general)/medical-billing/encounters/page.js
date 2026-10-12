@@ -10,6 +10,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { usePermissions } from '@/hooks/usePermissions'
 import EncounterModal from '@/components/medicalBilling/EncounterModal'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = {
     open: 'primary',
@@ -133,7 +134,7 @@ const page = () => {
                                                 encounters.map((e) => (
                                                     <tr key={e.id}>
                                                         <td>{e.encounter_number}</td>
-                                                        <td>{e.encounter_date}</td>
+                                                        <td>{formatDate(e.encounter_date)}</td>
                                                         <td>{e.patient ? `${e.patient.first_name} ${e.patient.last_name}` : 'N/A'}</td>
                                                         <td>{e.provider ? `${e.provider.first_name} ${e.provider.last_name}` : 'N/A'}</td>
                                                         <td>{e.place_of_service ? e.place_of_service.code : 'N/A'}</td>

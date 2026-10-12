@@ -10,6 +10,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { usePermissions } from '@/hooks/usePermissions'
 import ChargeModal from '@/components/medicalBilling/ChargeModal'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { draft: 'secondary', ready: 'info', billed: 'success', voided: 'danger' }
 
@@ -154,7 +155,7 @@ const page = () => {
                                             ) : (
                                                 charges.map((c) => (
                                                     <tr key={c.id}>
-                                                        <td>{c.dos_from}</td>
+                                                        <td>{formatDate(c.dos_from)}</td>
                                                         <td>{c.patient ? `${c.patient.first_name} ${c.patient.last_name}` : 'N/A'}</td>
                                                         <td>{c.provider ? `${c.provider.first_name} ${c.provider.last_name}` : 'N/A'}</td>
                                                         <td>{c.encounter?.encounter_number || 'N/A'}</td>

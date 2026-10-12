@@ -1,25 +1,19 @@
 'use client'
 import React, { useMemo, useState } from 'react'
-import { usePathname, useRouter } from 'next/navigation'
 import { useUser, NO_CLIENT } from '@/context/UserContext'
-import { usePermissions } from '@/hooks/usePermissions'
-
-const COMPANIES_PAGE = '/companies/list'
 
 /**
- * Header client switcher. Picking a client opens the Companies list, which
- * shows that client's companies — each row's "Open" button makes a company
- * the active one for the whole portal.
+ * Header switcher: pick a Client, then one of that client's Companies.
+ * Picking a company makes it the active company — every page of the portal
+ * (patients, claims, leads, users, dashboard, ...) then shows its data.
  *
- * Users who can't open the Companies list (no view-companies) but work in
- * several companies still get a company dropdown here, since they would
- * otherwise have no way to switch.
+ * The Client dropdown appears only when the user's companies span more than
+ * one client; otherwise the client is chosen automatically (UserContext).
+ * The chosen client is shared with the Companies list and is also set by
+ * opening a client from the sidebar's Clients list.
  */
 const CompanySwitcher = () => {
     const { companies, activeCompanyId, switchCompany, selectedClientKey, setSelectedClientKey } = useUser()
-    const { hasPermission } = usePermissions()
-    const router = useRouter()
-    const pathname = usePathname()
     const [isChanging, setIsChanging] = useState(false)
 
     const clients = useMemo(() => {
@@ -37,25 +31,24 @@ const CompanySwitcher = () => {
         })
     }, [companies])
 
-    const handleClientChange = (e) => {
-        const key = e.target.value
-        setSelectedClientKey(key)
-        // Show the chosen client's companies right away.
-        if (key && hasPermission('view-companies') && pathname !== COMPANIES_PAGE) {
-            router.push(COMPANIES_PAGE)
-        }
-    }
-
     const showClientSelect = clients.length > 1
-    const needsCompanyFallback = !hasPermission('view-companies') && companies.length > 1
+    const clientCompanies = selectedClientKey
+        ? companies.filter(c => (c.client ? String(c.client.id) : NO_CLIENT) === selectedClientKey)
+        : []
 
-    if (!showClientSelect && !needsCompanyFallback) {
+    // Nothing to choose: one client with a single company.
+    if (!showClientSelect && companies.length <= 1) {
         return null
     }
 
-    const fallbackCompanies = selectedClientKey
-        ? companies.filter(c => (c.client ? String(c.client.id) : NO_CLIENT) === selectedClientKey)
-        : companies
+    const handleCompanyChange = (e) => {
+        if (!e.target.value) return
+        setIsChanging(true)
+        // Reloads the current page so it shows the newly chosen company's data.
+        switchCompany(e.target.value)
+    }
+
+    const companyValue = clientCompanies.some(c => c.id === activeCompanyId) ? activeCompanyId : ''
 
     return (
         <div className="nxl-h-item d-flex align-items-center gap-2">
@@ -63,7 +56,8 @@ const CompanySwitcher = () => {
                 <select
                     className="form-select form-select-sm ol-company-select"
                     value={selectedClientKey || ''}
-                    onChange={handleClientChange}
+                    onChange={(e) => setSelectedClientKey(e.target.value)}
+                    disabled={isChanging}
                     title="Client"
                 >
                     <option value="">— Select client —</option>
@@ -72,24 +66,26 @@ const CompanySwitcher = () => {
                     ))}
                 </select>
             )}
-            {needsCompanyFallback && (
-                <select
-                    className="form-select form-select-sm ol-company-select"
-                    value={fallbackCompanies.some(c => c.id === activeCompanyId) ? activeCompanyId : ''}
-                    onChange={(e) => {
-                        if (!e.target.value) return
-                        setIsChanging(true)
-                        switchCompany(e.target.value)
-                    }}
-                    disabled={isChanging}
-                    title="Company"
-                >
-                    <option value="">— Select company —</option>
-                    {fallbackCompanies.map(company => (
-                        <option key={company.id} value={company.id}>{company.name}</option>
-                    ))}
-                </select>
-            )}
+            <select
+                className="form-select form-select-sm ol-company-select"
+                value={companyValue}
+                onChange={handleCompanyChange}
+                disabled={isChanging || !selectedClientKey}
+                title={selectedClientKey ? 'Company' : 'Select a client first'}
+            >
+                {!selectedClientKey ? (
+                    <option value="">Select a client first</option>
+                ) : (
+                    <>
+                        {companyValue === '' && <option value="">— Select company —</option>}
+                        {clientCompanies.map(company => (
+                            <option key={company.id} value={company.id}>
+                                {company.name}{company.status && company.status !== 'Active' ? ` (${company.status})` : ''}
+                            </option>
+                        ))}
+                    </>
+                )}
+            </select>
         </div>
     )
 }

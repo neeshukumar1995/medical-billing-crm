@@ -17,6 +17,7 @@ import { formatDate } from '@/utils/formatDate';
 import { useUser } from '@/context/UserContext';
 import { exportToExcel } from '@/utils/exportExcel';
 import SpreadsheetImportModal from '@/components/shared/SpreadsheetImportModal';
+import { HOME_PATH } from '@/constants/portalScope';
 
 // Constants
 const PAGE_SIZE = 5;
@@ -104,7 +105,6 @@ const CompaniesListPage = () => {
             const { data } = await crmInstance.get('/companies', { params })
             let list = Array.isArray(data) ? data : (data?.data || [])
             if (clientFilter === 'none') list = list.filter(c => !c.client_id)
-            const yesNo = (v) => (v === false || v === 0 ? 'No' : 'Yes')
             exportToExcel('Companies', [{
                 name: 'Companies',
                 rows: list.map(c => ({
@@ -115,8 +115,6 @@ const CompaniesListPage = () => {
                     'Phone': c.phone || '',
                     'Address': c.address || '',
                     'Status': c.status || 'Active',
-                    'CRM': yesNo(c.crm_enabled),
-                    'Medical Billing': yesNo(c.medical_billing_enabled),
                     'Patients': c.patients_count ?? 0,
                     'Providers': c.providers_count ?? 0,
                     'Claims': c.claims_count ?? 0,
@@ -480,12 +478,12 @@ const CompaniesListPage = () => {
                     title="Import Companies"
                     endpoint="/companies/import"
                     columnsHelp={isPlatform
-                        ? 'Columns: name (required), client (client name), title, email, phone, address, status (Active / Inactive / Suspended), crm_enabled, medical_billing_enabled (yes / no). A company whose name already exists in the same client is skipped.'
-                        : 'Columns: name (required), title, email, phone, address, status (Active / Inactive / Suspended), crm_enabled, medical_billing_enabled (yes / no). Companies are added to your own client.'}
+                        ? 'Columns: name (required), client (client name), title, email, phone, address, status (Active / Inactive / Suspended). A company whose name already exists in the same client is skipped.'
+                        : 'Columns: name (required), title, email, phone, address, status (Active / Inactive / Suspended). Companies are added to your own client.'}
                     template={{
                         fileName: 'companies_import_template',
-                        headers: ['name', 'client', 'title', 'email', 'phone', 'address', 'status', 'crm_enabled', 'medical_billing_enabled'],
-                        example: ['City Clinic', 'ABC Health Group', 'City Clinic Pvt Ltd', 'info@cityclinic.com', '9876543210', 'Delhi', 'Active', 'yes', 'yes'],
+                        headers: ['name', 'client', 'title', 'email', 'phone', 'address', 'status'],
+                        example: ['City Clinic', 'ABC Health Group', 'City Clinic Pvt Ltd', 'info@cityclinic.com', '9876543210', 'Delhi', 'Active'],
                     }}
                     extraFields={isPlatform && (
                         <div className="form-check">
@@ -661,7 +659,7 @@ const CompaniesListPage = () => {
                                                                                 <button
                                                                                     type="button"
                                                                                     className="btn btn-sm btn-primary"
-                                                                                    onClick={() => switchCompany(company.id, '/dashboard')}
+                                                                                    onClick={() => switchCompany(company.id, HOME_PATH)}
                                                                                     title="Work in this company"
                                                                                 >
                                                                                     Open
@@ -823,34 +821,6 @@ const CompaniesListPage = () => {
                                     </div>
 
                                     <div className="mb-3">
-                                        <label className="form-label d-block">Modules</label>
-                                        <div className="form-check form-check-inline">
-                                            <input
-                                                type="checkbox"
-                                                name="crm_enabled"
-                                                id="modal_crm_enabled"
-                                                className="form-check-input"
-                                                checked={formData.crm_enabled}
-                                                onChange={handleFormInputChange}
-                                                disabled={formSaving}
-                                            />
-                                            <label htmlFor="modal_crm_enabled" className="form-check-label">Enable CRM</label>
-                                        </div>
-                                        <div className="form-check form-check-inline">
-                                            <input
-                                                type="checkbox"
-                                                name="medical_billing_enabled"
-                                                id="modal_medical_billing_enabled"
-                                                className="form-check-input"
-                                                checked={formData.medical_billing_enabled}
-                                                onChange={handleFormInputChange}
-                                                disabled={formSaving}
-                                            />
-                                            <label htmlFor="modal_medical_billing_enabled" className="form-check-label">Enable Medical Billing</label>
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-3">
                                         <label className="form-label">Company Logo</label>
                                         <div className="position-relative">
                                             <FiImage className="position-absolute top-50 start-0 translate-middle-y ms-3 text-muted" size={16} />
@@ -933,17 +903,6 @@ const CompaniesListPage = () => {
                                         <label className="form-label fw-bold">Status</label>
                                         <p className="form-control-plaintext mb-0">
                                             {getStatusOption(viewCompany.status).label} — {getStatusOption(viewCompany.status).description}
-                                        </p>
-                                    </div>
-                                    <div className="col-md-6 mb-3">
-                                        <label className="form-label fw-bold">Modules</label>
-                                        <p className="form-control-plaintext mb-0">
-                                            <span className={`badge bg-soft-${viewCompany.crm_enabled !== false ? 'success' : 'secondary'} text-${viewCompany.crm_enabled !== false ? 'success' : 'secondary'} me-1`}>
-                                                CRM {viewCompany.crm_enabled !== false ? 'On' : 'Off'}
-                                            </span>
-                                            <span className={`badge bg-soft-${viewCompany.medical_billing_enabled !== false ? 'success' : 'secondary'} text-${viewCompany.medical_billing_enabled !== false ? 'success' : 'secondary'}`}>
-                                                Medical Billing {viewCompany.medical_billing_enabled !== false ? 'On' : 'Off'}
-                                            </span>
                                         </p>
                                     </div>
                                     <div className="col-md-6 mb-3">

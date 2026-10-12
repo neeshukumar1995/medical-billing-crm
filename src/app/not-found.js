@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { HOME_PATH } from '@/constants/portalScope';
 
 export default function NotFound() {
   const router = useRouter();
@@ -19,7 +20,7 @@ export default function NotFound() {
         <div className="d-flex gap-3 justify-content-center">
           <button
             className="btn btn-primary"
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push(HOME_PATH)}
           >
             <i className="bi bi-house-door me-2"></i>
             Go to Dashboard

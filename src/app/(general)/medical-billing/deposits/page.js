@@ -9,6 +9,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { usePermissions } from '@/hooks/usePermissions'
 import DepositModal from '@/components/medicalBilling/DepositModal'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { pending: 'secondary', deposited: 'info', reconciled: 'success' }
 
@@ -103,7 +104,7 @@ const page = () => {
                                                             </button>
                                                         </td>
                                                         <td>{d.bank_account ? `${d.bank_account.account_name} — ${d.bank_account.bank_name}` : 'N/A'}</td>
-                                                        <td>{d.deposit_date}</td>
+                                                        <td>{formatDate(d.deposit_date)}</td>
                                                         <td>{d.items_count}</td>
                                                         <td>${Number(d.total_amount).toFixed(2)}</td>
                                                         <td><span className={`badge bg-soft-${STATUS_COLORS[d.status] || 'secondary'} text-${STATUS_COLORS[d.status] || 'secondary'} text-capitalize`}>{d.status}</span></td>

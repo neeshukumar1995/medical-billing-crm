@@ -9,6 +9,7 @@ import PermissionGuard from '@/components/shared/PermissionGuard'
 import Spinner from '@/components/shared/Spinner'
 import { decryptId } from '@/utils/decryptId'
 import { usePermissions } from '@/hooks/usePermissions'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { draft: 'secondary', submitted: 'info', received: 'success', cancelled: 'danger' }
 
@@ -95,7 +96,7 @@ const page = () => {
                                             </div>
                                             <div className="col-md-3">
                                                 <label className="form-label text-muted">Order Date</label>
-                                                <p className="fw-semibold mb-0">{order.order_date}</p>
+                                                <p className="fw-semibold mb-0">{formatDate(order.order_date)}</p>
                                             </div>
                                             <div className="col-md-3">
                                                 <label className="form-label text-muted">Expected Date</label>

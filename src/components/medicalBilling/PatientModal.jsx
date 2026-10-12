@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import { FiEdit3, FiUser, FiX, FiSave, FiUsers, FiPlus, FiClock, FiEye } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
-import { formatDate, formatDateTime as formatDateTimeBase, toInputDate } from '@/utils/formatDate'
+import { formatDate, formatDateTime as formatDateTimeBase, toInputDate, formatDateAndTime } from '@/utils/formatDate'
 
 const SKIP_DIFF_FIELDS = ['updated_at', 'created_at', 'id', 'company_id']
 
@@ -436,7 +436,7 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
                                                     <tbody>
                                         {patient.appointments.slice(0, 5).map(a => (
                                                             <tr key={a.id}>
-                                                                <td>{a.appointment_date} {a.appointment_time}</td>
+                                                                <td>{formatDateAndTime(a.appointment_date, a.appointment_time)}</td>
                                                                 <td className="text-capitalize">{a.appointment_type || 'N/A'}</td>
                                                                 <td className="text-capitalize">{a.status?.replace('_', ' ')}</td>
                                                             </tr>

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import crmInstance from '@/utils/crmInstance'
 import { FiFileText, FiX } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
+import { formatDate } from '@/utils/formatDate'
 
 export default function PatientPaymentModal({ paymentId, onClose }) {
     const [payment, setPayment] = useState(null)
@@ -59,7 +60,7 @@ export default function PatientPaymentModal({ paymentId, onClose }) {
                                     </div>
                                     <div className="col-md-6">
                                         <label className="form-label text-muted">Payment Date</label>
-                                        <p className="fw-semibold mb-0">{payment.payment_date}</p>
+                                        <p className="fw-semibold mb-0">{formatDate(payment.payment_date)}</p>
                                     </div>
                                     <div className="col-md-6">
                                         <label className="form-label text-muted">Amount</label>

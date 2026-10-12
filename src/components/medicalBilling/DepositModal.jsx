@@ -5,6 +5,7 @@ import Swal from 'sweetalert2'
 import { FiFileText, FiPlus, FiTrash2, FiCheckCircle, FiCheck, FiX } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { pending: 'secondary', deposited: 'info', reconciled: 'success' }
 
@@ -149,7 +150,7 @@ export default function DepositModal({ depositId, onClose, onSaved }) {
                                         </div>
                                         <div className="col-md-4">
                                             <label className="form-label text-muted">Deposit Date</label>
-                                            <p className="fw-semibold mb-0">{deposit.deposit_date}</p>
+                                            <p className="fw-semibold mb-0">{formatDate(deposit.deposit_date)}</p>
                                         </div>
                                         <div className="col-md-4">
                                             <label className="form-label text-muted">Total</label>

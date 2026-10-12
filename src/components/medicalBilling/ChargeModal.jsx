@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import { FiEdit3, FiFileText, FiX, FiSave, FiPlus, FiTrash2 } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
-import { toInputDate } from '@/utils/formatDate'
+import { toInputDate, formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { draft: 'secondary', ready: 'info', billed: 'success', voided: 'danger' }
 
@@ -204,8 +204,8 @@ export default function ChargeModal({ chargeId, onClose, onSaved, initialMode = 
 
                                     <div className="row g-4 mb-3">
                                         <Field label="Provider" value={charge.provider ? `${charge.provider.first_name} ${charge.provider.last_name}` : null} />
-                                        <Field label="DOS From" value={charge.dos_from} />
-                                        <Field label="DOS To" value={charge.dos_to} />
+                                        <Field label="DOS From" value={formatDate(charge.dos_from)} />
+                                        <Field label="DOS To" value={formatDate(charge.dos_to)} />
                                         <Field label="Total Charge" value={`$${Number(charge.total_charge).toFixed(2)}`} />
                                     </div>
 

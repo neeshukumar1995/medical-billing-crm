@@ -9,6 +9,7 @@ import Swal from 'sweetalert2'
 import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { usePermissions } from '@/hooks/usePermissions'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { unposted: 'secondary', posted: 'success', reversed: 'danger' }
 
@@ -144,7 +145,7 @@ const page = () => {
                                             ) : (
                                                 payments.map((p) => (
                                                     <tr key={p.id}>
-                                                        <td>{p.payment_date}</td>
+                                                        <td>{formatDate(p.payment_date)}</td>
                                                         <td>{p.payer?.name || 'N/A'}</td>
                                                         <td>{p.payment_reference || 'N/A'}</td>
                                                         <td>{p.payment_method || 'N/A'}</td>

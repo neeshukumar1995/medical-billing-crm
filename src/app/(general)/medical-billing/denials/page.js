@@ -9,6 +9,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { usePermissions } from '@/hooks/usePermissions'
 import DenialModal from '@/components/medicalBilling/DenialModal'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = {
     open: 'danger', assigned: 'warning', in_review: 'info', corrected: 'primary',
@@ -123,7 +124,7 @@ const page = () => {
                                             ) : (
                                                 denials.map((d) => (
                                                     <tr key={d.id}>
-                                                        <td>{d.denial_date}</td>
+                                                        <td>{formatDate(d.denial_date)}</td>
                                                         <td>{d.claim?.claim_number || 'N/A'}</td>
                                                         <td>{d.claim?.patient ? `${d.claim.patient.first_name} ${d.claim.patient.last_name}` : 'N/A'}</td>
                                                         <td>{d.denial_code || 'N/A'}</td>

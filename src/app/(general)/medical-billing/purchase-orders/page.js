@@ -10,6 +10,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { usePermissions } from '@/hooks/usePermissions'
 import PurchaseOrderModal from '@/components/medicalBilling/PurchaseOrderModal'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { draft: 'secondary', submitted: 'info', received: 'success', cancelled: 'danger' }
 
@@ -130,7 +131,7 @@ const page = () => {
                                                     <tr key={po.id}>
                                                         <td><button type="button" className="btn btn-link p-0 align-baseline" onClick={() => setOpenPoId(po.id)}>{po.order_number}</button></td>
                                                         <td>{po.vendor?.name || 'N/A'}</td>
-                                                        <td>{po.order_date}</td>
+                                                        <td>{formatDate(po.order_date)}</td>
                                                         <td>{po.items_count}</td>
                                                         <td>${Number(po.total_amount).toFixed(2)}</td>
                                                         <td><span className={`badge bg-soft-${STATUS_COLORS[po.status] || 'secondary'} text-${STATUS_COLORS[po.status] || 'secondary'} text-capitalize`}>{po.status}</span></td>

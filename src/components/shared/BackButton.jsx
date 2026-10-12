@@ -2,6 +2,7 @@
 import React from 'react'
 import { useRouter } from 'next/navigation'
 import { FiArrowLeft } from 'react-icons/fi'
+import { HOME_PATH } from '@/constants/portalScope'
 
 /**
  * Goes back to the previous page. When there is no in-app history (page
@@ -9,7 +10,7 @@ import { FiArrowLeft } from 'react-icons/fi'
  * by default, since a URL's parent path often isn't a real page
  * (e.g. /patients/edit/12 -> /patients/edit).
  */
-const BackButton = ({ fallback = '/dashboard', className = '', label = 'Back' }) => {
+const BackButton = ({ fallback = HOME_PATH, className = '', label = 'Back' }) => {
     const router = useRouter()
 
     const handleBack = () => {

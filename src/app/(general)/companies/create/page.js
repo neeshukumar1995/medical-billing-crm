@@ -243,33 +243,6 @@ const page = () => {
                       ))}
                     </select>
                   </div>
-                  <div className="col-md-12 mb-3">
-                    <label className="form-label d-block">Modules</label>
-                    <div className="form-check form-check-inline">
-                      <input
-                        type="checkbox"
-                        name="crm_enabled"
-                        id="crm_enabled"
-                        className="form-check-input"
-                        checked={formData.crm_enabled}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                      />
-                      <label htmlFor="crm_enabled" className="form-check-label">Enable CRM</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        type="checkbox"
-                        name="medical_billing_enabled"
-                        id="medical_billing_enabled"
-                        className="form-check-input"
-                        checked={formData.medical_billing_enabled}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                      />
-                      <label htmlFor="medical_billing_enabled" className="form-check-label">Enable Medical Billing</label>
-                    </div>
-                  </div>
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Company Logo</label>
                     <div className="position-relative">

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import crmInstance from '@/utils/crmInstance'
+import { HOME_PATH } from '@/constants/portalScope'
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Simple, clean login page — single accent color, no gradients/particles/glass.
@@ -148,7 +149,7 @@ export default function LoginForm({ resetPath }) {
       localStorage.setItem('user', JSON.stringify(ud))
       localStorage.setItem('companyId', ud.company_id)
       localStorage.setItem('isLoggedIn', 'true')
-      router.replace('/dashboard')
+      router.replace(HOME_PATH)
     }
   }
 

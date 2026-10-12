@@ -10,13 +10,14 @@ import PermissionGuard from '@/components/shared/PermissionGuard'
 import { encryptId } from '@/utils/encryptId'
 import { DOCUMENT_TYPE_OPTIONS, DOCUMENT_STATUS_OPTIONS, STATUS_BADGE, formatStatusLabel } from '@/constants/credentialingOptions'
 import { getExpiryStatus, EXPIRY_STATUS_BADGE, EXPIRY_STATUS_LABELS } from '@/utils/expiryStatus'
+import { formatDate } from '@/utils/formatDate'
 
 const ExpiryCell = ({ date }) => {
     if (!date) return 'N/A'
     const status = getExpiryStatus(date)
     return (
         <div className="d-flex flex-column gap-1">
-            <span>{date}</span>
+            <span>{formatDate(date)}</span>
             {status !== 'active' && (
                 <span className={`badge bg-soft-${EXPIRY_STATUS_BADGE[status]} text-${EXPIRY_STATUS_BADGE[status]}`}>
                     {EXPIRY_STATUS_LABELS[status]}

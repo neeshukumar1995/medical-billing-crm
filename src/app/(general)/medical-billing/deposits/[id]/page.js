@@ -9,6 +9,7 @@ import PermissionGuard from '@/components/shared/PermissionGuard'
 import Spinner from '@/components/shared/Spinner'
 import { decryptId } from '@/utils/decryptId'
 import { usePermissions } from '@/hooks/usePermissions'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { pending: 'secondary', deposited: 'info', reconciled: 'success' }
 
@@ -142,7 +143,7 @@ const page = () => {
                                             </div>
                                             <div className="col-md-3">
                                                 <label className="form-label text-muted">Deposit Date</label>
-                                                <p className="fw-semibold mb-0">{deposit.deposit_date}</p>
+                                                <p className="fw-semibold mb-0">{formatDate(deposit.deposit_date)}</p>
                                             </div>
                                             <div className="col-md-3">
                                                 <label className="form-label text-muted">Total</label>

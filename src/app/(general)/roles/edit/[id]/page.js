@@ -11,6 +11,7 @@ import { useUser } from '@/context/UserContext'
 import PermissionGuard from '@/components/shared/PermissionGuard';
 import { decryptId } from '@/utils/decryptId'
 import { canGrantPermission } from '@/utils/permissionAccess'
+import { BD_PERMISSIONS } from '@/constants/portalScope'
 
 const EditRolePage = () => {
     const router = useRouter()
@@ -286,6 +287,9 @@ const EditRolePage = () => {
                                                 ) : (
                                                     <div className="row g-3">
                                                         {permissions.filter(permission =>
+                                                            // CRM/BD permissions are hidden (medical-billing-only
+                                                            // portal); ones a role already has stay selected.
+                                                            !BD_PERMISSIONS.includes(permission.name) &&
                                                             canGrantPermission(permission.name, {
                                                                 isSuperadmin: role === 'superadmin',
                                                                 heldPermissions,

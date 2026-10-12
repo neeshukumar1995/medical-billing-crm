@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import { FiEdit3, FiX, FiSave, FiClipboard } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
-import { toInputDate } from '@/utils/formatDate'
+import { toInputDate, formatDate } from '@/utils/formatDate'
 
 const Field = ({ label, value }) => (
     <div className="col-md-4">
@@ -164,7 +164,7 @@ export default function EncounterModal({ encounterId, onClose, onSaved, initialM
                                     </div>
 
                                     <div className="row g-4">
-                                        <Field label="Encounter Date" value={encounter.encounter_date} />
+                                        <Field label="Encounter Date" value={formatDate(encounter.encounter_date)} />
                                         <Field label="Provider" value={providerRecord ? `${providerRecord.first_name} ${providerRecord.last_name}` : null} />
                                         <Field label="Place of Service" value={posRecord ? `${posRecord.code} - ${posRecord.description}` : null} />
                                         <div className="col-md-12">

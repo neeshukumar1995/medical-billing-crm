@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import { FiFileText, FiX, FiCheckCircle, FiSend } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
-import { formatDateTime } from '@/utils/formatDate'
+import { formatDateTime, formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = {
     draft: 'secondary', ready: 'info', submitted: 'primary', accepted: 'success',
@@ -126,7 +126,7 @@ export default function ClaimModal({ claimId, onClose, onSaved }) {
                                         <Field label="Total Charge" value={`$${Number(claim.total_charge).toFixed(2)}`} />
                                         <Field label="Total Paid" value={`$${Number(claim.total_paid).toFixed(2)}`} />
                                         <Field label="Patient Responsibility" value={`$${Number(claim.patient_responsibility).toFixed(2)}`} />
-                                        <Field label="Submitted At" value={claim.submitted_at} />
+                                        <Field label="Submitted At" value={formatDateTime(claim.submitted_at)} />
                                     </div>
 
                                     <hr />
@@ -147,7 +147,7 @@ export default function ClaimModal({ claimId, onClose, onSaved }) {
                                             <tbody>
                                                 {(claim.items || []).map(item => (
                                                     <tr key={item.id}>
-                                                        <td>{item.dos_from}</td>
+                                                        <td>{formatDate(item.dos_from)}</td>
                                                         <td>{item.cpt_hcpcs_code}</td>
                                                         <td>{item.modifiers || 'N/A'}</td>
                                                         <td>{item.units}</td>

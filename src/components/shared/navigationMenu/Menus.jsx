@@ -5,7 +5,6 @@ import { menuList } from "@/utils/fackData/menuList";
 import getIcon from "@/utils/getIcon";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import crmInstance from "@/utils/crmInstance";
 import { useUser } from "@/context/UserContext";
 
 const Menus = () => {
@@ -17,7 +16,6 @@ const Menus = () => {
     const [loadingPermissions, setLoadingPermissions] = useState(true);
     const { user, permissions, loading, isPlatform } = useUser();
 
-    const [followupCount, setFollowupCount] = useState(0);
 
     const pathName = usePathname();
 
@@ -52,15 +50,14 @@ const Menus = () => {
                 'roles': 'roles',
                 'permissions': 'roles',
                 'users': 'users',
-                'leads': 'leads',
-                'reports': 'reports',
                 'settings': 'settings',
                 'dashboard': 'dashboard',
                 'companies': 'companies',
                 'clients': 'clients'
             };
 
-            parent = pathToMenuMap[parent] || parent;
+            // The top-level Dashboard item is the medical billing dashboard.
+            parent = pathName === '/medical-billing/dashboard' ? 'dashboard' : (pathToMenuMap[parent] || parent);
 
             setActiveParent(parent);
             setOpenDropdown(parent);
@@ -92,41 +89,6 @@ const Menus = () => {
         }
     }, [user, permissions, loading]);
 
-    // A company can be scoped to just CRM, just Medical Billing, or both
-    // (Company create/edit → "Enable CRM" / "Enable Medical Billing").
-    // Defaults to true so companies from before this field existed, or a
-    // stale cached user, still see everything as before.
-    const crmEnabled = user?.company?.crm_enabled !== false;
-
-    useEffect(() => {
-        // Follow-ups are a CRM/lead concept — a medical-billing-only company
-        // 401s on this endpoint, so skip it entirely in that case.
-        if (!crmEnabled) return;
-
-        const fetchFollowupCount = async () => {
-            try {
-                const rawCid = localStorage.getItem('companyId');
-                const cid = rawCid ? JSON.parse(rawCid) : null;
-                if (!cid) return;
-
-                const response = await crmInstance.get(`/followups/master-filter/${cid}`, {
-                    params: { page: 1, per_page: 1 }
-                });
-
-                if (response.data.success) {
-                    const total = response.data.data?.total ?? 0;
-                    setFollowupCount(total);
-                }
-            } catch (err) {
-                console.error('Error fetching followup count:', err);
-            }
-        };
-
-        fetchFollowupCount();
-
-        const interval = setInterval(fetchFollowupCount, 60000);
-        return () => clearInterval(interval);
-    }, [crmEnabled]);
 
     const hasPermission = (permission) => {
         if (userPermissions.includes('*')) return true;
@@ -235,38 +197,16 @@ const Menus = () => {
                 >
                     {item.icon && <span className="nxl-micon"> {getIcon(item.icon)} </span>}
                     <span className="nxl-mtext">{item.name}</span>
-                    {item.name === "Follow Up Leads" && followupCount > 0 && (
-                        <span className="nxl-badge-count">{followupCount}</span>
-                    )}
                 </Link>
             </li>
         );
     });
 
     const medicalBillingEnabled = user?.company?.medical_billing_enabled !== false;
-    const CRM_ONLY_MENUS = ['sources', 'leads', 'reports'];
 
     const filteredMenuList = menuList.map(menu => {
-        if (CRM_ONLY_MENUS.includes(menu.name) && !crmEnabled) {
+        if ((menu.name === 'medical billing' || menu.name === 'dashboard') && !medicalBillingEnabled) {
             return null;
-        }
-
-        if (menu.name === 'medical billing' && !medicalBillingEnabled) {
-            return null;
-        }
-
-        if (menu.name === 'dashboard') {
-            // Superadmin's top-level Dashboard defaults to the CRM overview —
-            // if this company only has Medical Billing turned on, send them
-            // straight to that module's own dashboard instead. But that
-            // repointed link still needs its own permission check — showing
-            // it to someone without medical_billing.dashboard.view would
-            // just be a dead link.
-            if (!crmEnabled && medicalBillingEnabled) {
-                if (!hasPermission('medical_billing.dashboard.view')) return null;
-                return { ...menu, path: '/medical-billing/dashboard' };
-            }
-            return menu;
         }
 
         if (menu.dropdownMenu && menu.dropdownMenu.length > 0) {

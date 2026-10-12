@@ -5,7 +5,7 @@ import Swal from 'sweetalert2'
 import { FiEdit3, FiUser, FiX, FiSave, FiCalendar } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
-import { toInputDate } from '@/utils/formatDate'
+import { toInputDate, formatDateAndTime, formatDate } from '@/utils/formatDate'
 
 const Field = ({ label, value }) => (
     <div className="col-md-4">
@@ -175,7 +175,7 @@ export default function AppointmentModal({ appointmentId, onClose, onSaved, init
                                                     {appointment.status?.replace('_', ' ')}
                                                 </span>
                                             </h4>
-                                            <p className="text-muted mb-0">{appointment.appointment_date} {appointment.appointment_time}</p>
+                                            <p className="text-muted mb-0">{formatDateAndTime(appointment.appointment_date, appointment.appointment_time)}</p>
                                         </div>
                                         {hasPermission('medical_appointments.manage') && (
                                             <button type="button" className="btn btn-primary" onClick={handleEditClick}>
@@ -188,7 +188,7 @@ export default function AppointmentModal({ appointmentId, onClose, onSaved, init
                                     <div className="row g-4">
                                         <Field label="Patient" value={patientRecord ? `${patientRecord.first_name} ${patientRecord.last_name}${patientRecord.patient_number ? ` (${patientRecord.patient_number})` : ''}` : null} />
                                         <Field label="Provider" value={providerRecord ? `${providerRecord.first_name} ${providerRecord.last_name}` : null} />
-                                        <Field label="Date" value={appointment.appointment_date} />
+                                        <Field label="Date" value={formatDate(appointment.appointment_date)} />
                                         <Field label="Time" value={appointment.appointment_time} />
                                         <Field label="Type" value={appointment.appointment_type} />
                                         <Field label="Assigned To" value={assignedUser?.name} />

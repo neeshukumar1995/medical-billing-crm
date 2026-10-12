@@ -7,6 +7,7 @@ import { FiFileText } from 'react-icons/fi'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import Spinner from '@/components/shared/Spinner'
 import { decryptId } from '@/utils/decryptId'
+import { formatDate } from '@/utils/formatDate'
 
 const page = () => {
     const router = useRouter()
@@ -61,7 +62,7 @@ const page = () => {
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label text-muted">Payment Date</label>
-                                                <p className="fw-semibold mb-0">{payment.payment_date}</p>
+                                                <p className="fw-semibold mb-0">{formatDate(payment.payment_date)}</p>
                                             </div>
                                             <div className="col-md-6">
                                                 <label className="form-label text-muted">Amount</label>

@@ -3,6 +3,7 @@ import LoginForm from '@/components/authentication/LoginForm'
 import Image from 'next/image'
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { HOME_PATH } from '@/constants/portalScope'
 
 const page = () => {
     const router = useRouter()
@@ -11,7 +12,7 @@ const page = () => {
         // Check if user is already logged in
         const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
         if (isLoggedIn) {
-            router.push('/dashboard')
+            router.push(HOME_PATH)
         }
     }, [router])
 

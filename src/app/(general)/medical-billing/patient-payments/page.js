@@ -10,6 +10,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { usePermissions } from '@/hooks/usePermissions'
 import PatientPaymentModal from '@/components/medicalBilling/PatientPaymentModal'
+import { formatDate } from '@/utils/formatDate'
 
 const page = () => {
     const router = useRouter()
@@ -92,7 +93,7 @@ const page = () => {
                                                         </td>
                                                         <td>{p.patient ? `${p.patient.first_name} ${p.patient.last_name}` : 'N/A'}</td>
                                                         <td>{p.claim?.claim_number || 'N/A'}</td>
-                                                        <td>{p.payment_date}</td>
+                                                        <td>{formatDate(p.payment_date)}</td>
                                                         <td>${Number(p.amount).toFixed(2)}</td>
                                                         <td className="text-capitalize">{p.method || 'N/A'}</td>
                                                         <td className="text-end">

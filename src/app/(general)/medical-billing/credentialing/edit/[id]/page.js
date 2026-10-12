@@ -21,6 +21,7 @@ import {
     STATUS_BADGE,
 } from '@/constants/credentialingOptions'
 import { getExpiryStatus, EXPIRY_STATUS_BADGE, EXPIRY_STATUS_LABELS } from '@/utils/expiryStatus'
+import { formatDate } from '@/utils/formatDate'
 
 const emptyVerification = { type: 'npi', status: 'pending', verified_date: '', expiration_date: '', source: '', notes: '' }
 const emptyTask = { title: '', assignee: '', due_date: '', status: 'pending' }
@@ -880,7 +881,7 @@ const page = () => {
                                                                         <td>
                                                                             {doc.expiration_date ? (
                                                                                 <div className="d-flex flex-column gap-1">
-                                                                                    <span>{doc.expiration_date}</span>
+                                                                                    <span>{formatDate(doc.expiration_date)}</span>
                                                                                     {getExpiryStatus(doc.expiration_date) !== 'active' && (
                                                                                         <span className={`badge bg-soft-${EXPIRY_STATUS_BADGE[getExpiryStatus(doc.expiration_date)]} text-${EXPIRY_STATUS_BADGE[getExpiryStatus(doc.expiration_date)]}`}>
                                                                                             {EXPIRY_STATUS_LABELS[getExpiryStatus(doc.expiration_date)]}
@@ -999,7 +1000,7 @@ const page = () => {
                                                                     <td>
                                                                         {policy.expiration_date ? (
                                                                             <div className="d-flex flex-column gap-1">
-                                                                                <span>{policy.expiration_date}</span>
+                                                                                <span>{formatDate(policy.expiration_date)}</span>
                                                                                 {getExpiryStatus(policy.expiration_date) !== 'active' && (
                                                                                     <span className={`badge bg-soft-${EXPIRY_STATUS_BADGE[getExpiryStatus(policy.expiration_date)]} text-${EXPIRY_STATUS_BADGE[getExpiryStatus(policy.expiration_date)]}`}>
                                                                                         {EXPIRY_STATUS_LABELS[getExpiryStatus(policy.expiration_date)]}

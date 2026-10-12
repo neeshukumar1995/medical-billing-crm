@@ -1,16 +1,17 @@
 // Static menu configuration with permission mappings.
+// Medical-billing-only portal (see constants/portalScope.js) — the CRM / BD
+// menus (sources, leads, reports, zoom, outlook) are gone.
 // Ordered by workflow — what you set up first sits higher: clients →
-// companies → roles/permissions → users → CRM (sources → leads → reports) →
-// medical billing → settings. Inside a module, "Create" comes before "List".
+// companies → roles/permissions → users → medical billing → settings.
+// Inside a module, "Create" comes before "List".
 export const menuConfig = [
     {
         id: 0,
         name: "dashboard",
-        path: "/dashboard",
+        path: "/medical-billing/dashboard",
         icon: 'feather-airplay',
-        permission: "view-dashboard",
+        permission: "medical_billing.dashboard.view",
         dropdownMenu: [],
-        role: ["superadmin"],
     },
     // Clients, Companies, Users and Sources open their list page directly (no
     // dropdown); Create / Trashed etc. are buttons in that list page's header.
@@ -83,114 +84,6 @@ export const menuConfig = [
         dropdownMenu: []
     },
     {
-        id: 7,
-        name: "sources",
-        path: "/sources/list",
-        icon: 'feather-file-text',
-        permission: "view-sources",
-        dropdownMenu: []
-    },
-    {
-        id: 3,
-        name: "leads",
-        path: "#",
-        icon: 'feather-users',
-        permission: "view-leads",
-        dropdownMenu: [
-            {
-                id: 1,
-                name: "Provider Types",
-                path: "/leads/lead-types/list",
-                icon: 'feather-tag',
-                permission: "view-leads-types",
-                subdropdownMenu: false
-            },
-            {
-                id: 2,
-                name: "Lead Status",
-                path: "/leads/lead-status/list",
-                icon: 'feather-activity',
-                permission: "view-leads-status",
-                subdropdownMenu: false
-            },
-            {
-                id: 3,
-                name: "Raw Leads",
-                path: "/leads/raw-leads",
-                icon: 'feather-inbox',
-                permission: "raw-leads",
-                subdropdownMenu: false
-            },
-            {
-                id: 4,
-                name: "Assigned Leads",
-                path: "/leads/list",
-                icon: 'feather-user-check',
-                permission: "view-leads",
-                subdropdownMenu: false
-            },
-            {
-                id: 5,
-                name: "Follow Up Leads",
-                path: "/leads/User-Follow-Ups",
-                icon: 'feather-clock',
-                permission: "User-Follow-Ups",
-                subdropdownMenu: false
-            },
-            {
-                id: 6,
-                name: "Converted Leads",
-                path: "/leads/converted-leads",
-                icon: 'feather-check-circle',
-                permission: "converted-leads",
-                subdropdownMenu: false
-            },
-            {
-                id: 7,
-                name: "Leads by Users",
-                path: "/leads/user-by-leads",
-                icon: 'feather-users',
-                permission: "user-by-leads",
-                subdropdownMenu: false
-            },
-            {
-                id: 8,
-                name: "Trash Data",
-                path: "/leads/draft",
-                icon: 'feather-trash-2',
-                permission: "trashed-leads",
-                subdropdownMenu: false
-            }
-        ]
-    },
-    {
-        id: 4,
-        name: "reports",
-        path: "#",
-        icon: 'feather-cast',
-        permission: "view-reports",
-        dropdownMenu: [
-            {
-                id: 1,
-                name: "Leads Report",
-                path: "/reports/leads",
-                icon: 'feather-bar-chart-2',
-                permission: "view-leads-report",
-                subdropdownMenu: false
-            }
-        ]
-    },
-
-//     {
-//     id: 9,
-//     name: "Zoom Meetings",
-//     path: "/zoom/meetings",
-//     icon: 'feather-video',   // ya koi bhi Zoom icon
-//     permission: "view-zoom-meetings",
-//     role: ["superadmin", "admin", "sales"], // jinko dikhana hai
-//     dropdownMenu: [] // agar koi sub menu nahi hai
-// },
-    {
         id: 8,
         name: "medical billing",
         path: "#",
@@ -198,18 +91,20 @@ export const menuConfig = [
         permission: "medical_patients.view",
         dropdownMenu: [
             {
-                id: 0,
-                name: "Dashboard",
-                path: "/medical-billing/dashboard",
-                icon: 'feather-pie-chart',
-                permission: "medical_billing.dashboard.view",
-                subdropdownMenu: false
-            },
-            {
                 id: 'my-task',
                 name: "My Task",
                 path: "/medical-billing/my-task",
                 icon: 'feather-briefcase',
+                permission: "medical_patients.view",
+                hideForRoles: ['superadmin', 'admin'],
+                subdropdownMenu: false
+            },
+            {
+                // The employee's own work history (moved off the My Task page).
+                id: 'my-activity',
+                name: "My Activity",
+                path: "/medical-billing/my-activity",
+                icon: 'feather-activity',
                 permission: "medical_patients.view",
                 hideForRoles: ['superadmin', 'admin'],
                 subdropdownMenu: false

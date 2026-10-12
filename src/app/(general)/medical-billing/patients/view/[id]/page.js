@@ -11,7 +11,8 @@ import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
 import { decryptId } from '@/utils/decryptId'
 import { encryptId } from '@/utils/encryptId'
-import { formatDate, formatDateTime as formatDateTimeBase } from '@/utils/formatDate'
+import PatientNotes from '@/components/medicalBilling/PatientNotes'
+import { formatDate, formatDateTime as formatDateTimeBase, formatDateAndTime } from '@/utils/formatDate'
 
 const Field = ({ label, value }) => (
     <div className="col-md-4">
@@ -462,7 +463,7 @@ const page = () => {
                                                 <tbody>
                                                     {patient.appointments.map(a => (
                                                         <tr key={a.id}>
-                                                            <td>{a.appointment_date} {a.appointment_time}</td>
+                                                            <td>{formatDateAndTime(a.appointment_date, a.appointment_time)}</td>
                                                             <td className="text-capitalize">{a.appointment_type || 'N/A'}</td>
                                                             <td className="text-capitalize">{a.status?.replace('_', ' ')}</td>
                                                         </tr>
@@ -492,7 +493,7 @@ const page = () => {
                                                     {patient.encounters.map(enc => (
                                                         <tr key={enc.id}>
                                                             <td>{enc.encounter_number}</td>
-                                                            <td>{enc.encounter_date}</td>
+                                                            <td>{formatDate(enc.encounter_date)}</td>
                                                             <td className="text-capitalize">{enc.status}</td>
                                                         </tr>
                                                     ))}
@@ -500,6 +501,11 @@ const page = () => {
                                             </table>
                                         </div>
                                     )}
+
+                                    <hr className="my-4" />
+
+                                    {/* ── Notes ─────────────────────────────────────────── */}
+                                    <PatientNotes patientId={actualId} />
 
                                     <hr className="my-4" />
 

@@ -5,6 +5,7 @@ import NavigationManu from "@/components/shared/navigationMenu/NavigationMenu";
 import dynamic from "next/dynamic";
 import useBootstrapUtils from "@/hooks/useBootstrapUtils";
 import { useEffect, useState } from "react";
+import { HOME_PATH, isBdRoute } from "@/constants/portalScope";
 
 const layout = ({ children }) => {
     const pathName = usePathname()
@@ -24,7 +25,14 @@ const layout = ({ children }) => {
         setIsLoading(false)
     }, [router])
 
-    if (isLoading) {
+    // Medical-billing-only portal: CRM/BD pages (old bookmarks, links,
+    // redirects) land on the medical billing dashboard instead.
+    const hiddenPage = isBdRoute(pathName)
+    useEffect(() => {
+        if (hiddenPage) router.replace(HOME_PATH)
+    }, [hiddenPage, router])
+
+    if (isLoading || hiddenPage) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>

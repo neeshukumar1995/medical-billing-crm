@@ -16,6 +16,7 @@ import {
     STATUS_BADGE, PSV_STATUS_BADGE, formatStatusLabel,
     PAYER_ENROLLMENT_STATUS_OPTIONS, FOLLOW_UP_BUCKET_OPTIONS, DOCUMENT_STATUS_OPTIONS,
 } from '@/constants/credentialingOptions'
+import { formatDate } from '@/utils/formatDate'
 
 const page = () => {
     const router = useRouter()
@@ -382,7 +383,7 @@ const page = () => {
                                                         <td>
                                                             {record.expiration_date ? (
                                                                 <span className={isExpiringSoon(record.expiration_date) ? 'text-danger fw-semibold' : ''}>
-                                                                    {record.expiration_date}
+                                                                    {formatDate(record.expiration_date)}
                                                                 </span>
                                                             ) : 'N/A'}
                                                         </td>

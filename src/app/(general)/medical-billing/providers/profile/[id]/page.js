@@ -13,7 +13,7 @@ import { decryptId } from '@/utils/decryptId'
 import { encryptId } from '@/utils/encryptId'
 import { providerTypeLabel } from '@/constants/providerOptions'
 import { STATUS_BADGE, PSV_STATUS_BADGE, PAYER_ENROLLMENT_STATUS_BADGE, INSURANCE_POLICY_STATUS_BADGE, formatStatusLabel, payerEnrollmentStatusLabel } from '@/constants/credentialingOptions'
-import { formatDateTime } from '@/utils/formatDate'
+import { formatDateTime, formatDate } from '@/utils/formatDate'
 import { getExpiryStatus, EXPIRY_STATUS_BADGE, EXPIRY_STATUS_LABELS } from '@/utils/expiryStatus'
 
 const Field = ({ label, value }) => (
@@ -34,7 +34,7 @@ const ExpiryCell = ({ date }) => {
     const status = getExpiryStatus(date)
     return (
         <div className="d-flex flex-column gap-1">
-            <span>{date}</span>
+            <span>{formatDate(date)}</span>
             {status !== 'active' && (
                 <span className={`badge bg-soft-${EXPIRY_STATUS_BADGE[status]} text-${EXPIRY_STATUS_BADGE[status]}`}>
                     {EXPIRY_STATUS_LABELS[status]}

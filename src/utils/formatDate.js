@@ -18,7 +18,9 @@ function parseDateOnly(value) {
 function toDate(value) {
     if (!value) return null
     if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value
-    const d = new Date(value)
+    // DB timestamps "2026-10-02 02:10:09" — Safari only parses the ISO "T" form.
+    const normalized = typeof value === 'string' ? value.replace(/^(\d{4}-\d{2}-\d{2}) (\d)/, '$1T$2') : value
+    const d = new Date(normalized)
     return Number.isNaN(d.getTime()) ? null : d
 }
 
@@ -50,6 +52,20 @@ export const formatDateTime = (value) => {
     const d = toDate(value)
     if (!d) return datePart
     return `${datePart}, ${formatTime(d)}`
+}
+
+/**
+ * A calendar date plus a separate wall-clock time, e.g. an appointment's
+ * appointment_date + appointment_time ("2026-10-06", "13:15:00")
+ * -> "6 Oct 2026, 1:15 PM". The time is never timezone-shifted.
+ */
+export const formatDateAndTime = (date, time) => {
+    const datePart = formatDate(typeof date === 'string' ? date.slice(0, 10) : date)
+    if (!time) return datePart
+    const [h, m] = String(time).split(':').map(Number)
+    if (Number.isNaN(h)) return datePart ? `${datePart}, ${time}` : time
+    const clock = `${h % 12 || 12}:${String(m || 0).padStart(2, '0')} ${h >= 12 ? 'PM' : 'AM'}`
+    return datePart ? `${datePart}, ${clock}` : clock
 }
 
 /** Value for an <input type="date">: always "YYYY-MM-DD", never timezone-shifted. */

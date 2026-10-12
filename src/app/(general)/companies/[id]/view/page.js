@@ -4,7 +4,7 @@ import PageHeader from '@/components/shared/pageHeader/PageHeader'
 import {
   FiUserCheck, FiActivity, FiShield, FiFileText, FiCalendar,
   FiClipboard, FiDollarSign, FiAlertTriangle, FiCreditCard, FiAward, FiTruck, FiPackage,
-  FiUsers, FiTarget, FiBriefcase, FiDownload
+  FiUsers, FiBriefcase, FiDownload
 } from 'react-icons/fi'
 import Link from 'next/link'
 import crmInstance from '@/utils/crmInstance'
@@ -37,9 +37,8 @@ const MEDICAL_STATS = [
   { key: 'inventory_items', label: 'Inventory Items', icon: FiPackage, color: 'secondary', path: '/medical-billing/inventory' },
 ]
 
-const CRM_STATS = [
+const TEAM_STATS = [
   { key: 'users', label: 'Users', icon: FiUsers, color: 'primary', path: '/users/list' },
-  { key: 'leads', label: 'Leads', icon: FiTarget, color: 'warning', path: '/leads/list' },
 ]
 
 const FINANCIALS = [
@@ -125,7 +124,7 @@ const page = () => {
         name: 'Company',
         rows: [
           ['Company', c.name], ['Client', c.client?.name], ['Title', c.title], ['Address', c.address],
-          ['Status', c.status], ['CRM', c.crm_enabled ? 'On' : 'Off'], ['Medical Billing', c.medical_billing_enabled ? 'On' : 'Off'],
+          ['Status', c.status],
           ['Created', c.created_at ? formatDate(c.created_at) : ''], ['Period', periodLabel(period)],
         ].map(([Field, Value]) => ({ Field, Value: Value ?? '' })),
       },
@@ -135,7 +134,7 @@ const page = () => {
       },
       {
         name: 'Counts',
-        rows: [...MEDICAL_STATS, ...CRM_STATS].map(s => ({ Metric: s.label, Count: Number(overview.counts?.[s.key] || 0) })),
+        rows: [...MEDICAL_STATS, ...TEAM_STATS].map(s => ({ Metric: s.label, Count: Number(overview.counts?.[s.key] || 0) })),
       },
       {
         name: 'Claims by Status',
@@ -203,12 +202,6 @@ const page = () => {
                   <span className={`badge ${company.status === 'Active' ? 'bg-soft-success text-success' : 'bg-soft-secondary text-secondary'}`}>
                     {company.status || 'Active'}
                   </span>
-                  <span className={`badge ${company.crm_enabled ? 'bg-soft-primary text-primary' : 'bg-soft-secondary text-muted'}`}>
-                    CRM {company.crm_enabled ? 'On' : 'Off'}
-                  </span>
-                  <span className={`badge ${company.medical_billing_enabled ? 'bg-soft-primary text-primary' : 'bg-soft-secondary text-muted'}`}>
-                    Medical Billing {company.medical_billing_enabled ? 'On' : 'Off'}
-                  </span>
                 </div>
               </div>
             </div>
@@ -236,12 +229,12 @@ const page = () => {
 
             <h5 className="mb-3">Medical Billing</h5>
             <div className="row">
-              {MEDICAL_STATS.map(s => <StatCard key={s.key} {...s} value={counts[s.key]} onOpen={() => openModule(s.path)} />)}
+              {MEDICAL_STATS.map(({ key, ...stat }) => <StatCard key={key} {...stat} value={counts[key]} onOpen={() => openModule(stat.path)} />)}
             </div>
 
-            <h5 className="mb-3">CRM</h5>
+            <h5 className="mb-3">Team</h5>
             <div className="row">
-              {CRM_STATS.map(s => <StatCard key={s.key} {...s} value={counts[s.key]} onOpen={() => openModule(s.path)} />)}
+              {TEAM_STATS.map(({ key, ...stat }) => <StatCard key={key} {...stat} value={counts[key]} onOpen={() => openModule(stat.path)} />)}
             </div>
 
             <div className="row">

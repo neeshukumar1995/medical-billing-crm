@@ -5,6 +5,7 @@ import Swal from 'sweetalert2'
 import { FiShoppingCart, FiCheckCircle, FiTrash2, FiX } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
+import { formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = { draft: 'secondary', submitted: 'info', received: 'success', cancelled: 'danger' }
 
@@ -101,7 +102,7 @@ export default function PurchaseOrderModal({ poId, onClose, onSaved }) {
                                         </div>
                                         <div className="col-md-4">
                                             <label className="form-label text-muted">Order Date</label>
-                                            <p className="fw-semibold mb-0">{order.order_date}</p>
+                                            <p className="fw-semibold mb-0">{formatDate(order.order_date)}</p>
                                         </div>
                                         <div className="col-md-4">
                                             <label className="form-label text-muted">Expected Date</label>
