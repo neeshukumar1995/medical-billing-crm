@@ -4,7 +4,7 @@ import { FiUpload, FiUser, FiDownload } from 'react-icons/fi'
 import crmInstance from '@/utils/crmInstance'
 import { BACKEND_BASE_URL } from '@/config/api'
 
-const PatientImportModal = ({ onClose, onImported }) => {
+const PatientImportModal = ({ onClose, onImported, companyId, companyName }) => {
     const fileInputRef = useRef(null)
     const [file, setFile] = useState(null)
     const [assignedTo, setAssignedTo] = useState('')
@@ -13,15 +13,19 @@ const PatientImportModal = ({ onClose, onImported }) => {
     const [result, setResult] = useState(null)
     const [error, setError] = useState('')
 
+    const targetCompanyId = companyId || (() => {
+        if (typeof window === 'undefined') return null
+        const raw = localStorage.getItem('companyId')
+        try { return raw ? JSON.parse(raw) : null } catch { return raw }
+    })()
+
     // Every employee this batch could be handed to, in one go.
     useEffect(() => {
-        const cid = localStorage.getItem('companyId')
-        const parsedCid = cid ? JSON.parse(cid) : null
-        if (!parsedCid) return
-        crmInstance.get(`/users/${parsedCid}`, { params: { all: 1 } })
+        if (!targetCompanyId) return
+        crmInstance.get(`/users/${targetCompanyId}`, { params: { all: 1 } })
             .then(({ data }) => setUsers(Array.isArray(data) ? data : (data?.data || [])))
             .catch(() => {})
-    }, [])
+    }, [targetCompanyId])
 
     const handleFileChange = (e) => {
         const f = e.target.files[0]
@@ -52,9 +56,17 @@ const PatientImportModal = ({ onClose, onImported }) => {
             const formData = new FormData()
             formData.append('file', file)
             if (assignedTo) formData.append('assigned_to', assignedTo)
+            const targetCid = companyId || (() => {
+                const raw = typeof window !== 'undefined' ? localStorage.getItem('companyId') : null
+                try { return raw ? JSON.parse(raw) : null } catch { return raw }
+            })()
+            if (targetCid) formData.append('company_id', targetCid)
 
             const { data } = await crmInstance.post('/medical-billing/patients/import', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    ...(targetCid ? { 'X-Company-ID': String(targetCid) } : {})
+                },
             })
 
             setResult(data)
@@ -79,7 +91,7 @@ const PatientImportModal = ({ onClose, onImported }) => {
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Bulk Upload Patients</h5>
+                            <h5 className="modal-title">Bulk Upload Patients{companyName ? ` — ${companyName}` : ''}</h5>
                             <button type="button" className="btn-close" onClick={onClose} />
                         </div>
                         {!result && (

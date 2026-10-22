@@ -1,10 +1,10 @@
 'use client'
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import PageHeader from '@/components/shared/pageHeader/PageHeader'
 import {
   FiUserCheck, FiActivity, FiShield, FiFileText, FiCalendar,
   FiClipboard, FiDollarSign, FiAlertTriangle, FiCreditCard, FiAward, FiTruck, FiPackage,
-  FiUsers, FiBriefcase, FiDownload
+  FiUsers, FiBriefcase, FiDownload, FiUpload
 } from 'react-icons/fi'
 import Link from 'next/link'
 import crmInstance from '@/utils/crmInstance'
@@ -18,6 +18,8 @@ import { decryptId } from '@/utils/decryptId'
 import { encryptId } from '@/utils/encryptId'
 import { formatDate } from '@/utils/formatDate'
 import { IMAGE_BASE_URL } from '@/config/api'
+import PatientImportModal from '@/components/medicalBilling/PatientImportModal'
+import { usePermissions } from '@/hooks/usePermissions'
 
 // `path` = the module list a card opens (inside this company).
 const MEDICAL_STATS = [
@@ -51,29 +53,46 @@ const FINANCIALS = [
 const money = (value) => Number(value || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' })
 const humanize = (value) => (value || 'unknown').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
 
-const StatCard = ({ icon: Icon, label, value, color, onOpen }) => (
+const StatCard = ({ icon: Icon, label, value, color, onOpen, actionIcon: ActionIcon, actionTitle, onAction }) => (
   <div className="col-xxl-2 col-lg-3 col-md-4 col-6 mb-4">
     <div
-      className="card h-100 mb-0"
+      className="card h-100 mb-0 position-relative"
       role="button"
       style={{ cursor: 'pointer' }}
       onClick={onOpen}
       title={`Open ${label} of this company`}
     >
-      <div className="card-body d-flex align-items-center gap-3">
-        <div className={`avatar-text avatar-lg bg-soft-${color} text-${color}`}>
-          <Icon size={18} />
+      <div className="card-body d-flex align-items-center justify-content-between gap-2">
+        <div className="d-flex align-items-center gap-3">
+          <div className={`avatar-text avatar-lg bg-soft-${color} text-${color}`}>
+            <Icon size={18} />
+          </div>
+          <div>
+            <div className="fs-20 fw-bold text-dark">{Number(value || 0).toLocaleString()}</div>
+            <div className="fs-12 text-muted">{label}</div>
+          </div>
         </div>
-        <div>
-          <div className="fs-20 fw-bold text-dark">{Number(value || 0).toLocaleString()}</div>
-          <div className="fs-12 text-muted">{label}</div>
-        </div>
+        {ActionIcon && onAction && (
+          <button
+            type="button"
+            className="btn btn-sm btn-icon btn-light-brand"
+            title={actionTitle}
+            onClick={(e) => {
+              e.stopPropagation()
+              onAction()
+            }}
+          >
+            <ActionIcon size={14} />
+          </button>
+        )}
       </div>
     </div>
   </div>
 )
 
 const page = () => {
+  const { hasPermission } = usePermissions()
+  const [showPatientImport, setShowPatientImport] = useState(false)
   const params = useParams()
   const { activeCompanyId, switchCompany } = useUser()
   const router = useRouter()
@@ -83,28 +102,27 @@ const page = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  useEffect(() => {
+  const fetchOverview = useCallback(async () => {
     if (!actualId) return
-
-    const fetchOverview = async () => {
-      try {
-        setLoading(true)
-        const query = {}
-        if (period.from) query.from = period.from
-        if (period.to) query.to = period.to
-        const response = await crmInstance.get(`/company-overview/${actualId}`, { params: query })
-        setOverview(response.data)
-        setError('')
-      } catch (err) {
-        console.error('Failed to fetch company overview:', err)
-        setError(err.response?.data?.error || err.response?.data?.message || 'Failed to load company details.')
-      } finally {
-        setLoading(false)
-      }
+    try {
+      setLoading(true)
+      const query = {}
+      if (period.from) query.from = period.from
+      if (period.to) query.to = period.to
+      const response = await crmInstance.get(`/company-overview/${actualId}`, { params: query })
+      setOverview(response.data)
+      setError('')
+    } catch (err) {
+      console.error('Failed to fetch company overview:', err)
+      setError(err.response?.data?.error || err.response?.data?.message || 'Failed to load company details.')
+    } finally {
+      setLoading(false)
     }
-
-    fetchOverview()
   }, [actualId, period])
+
+  useEffect(() => {
+    fetchOverview()
+  }, [fetchOverview])
 
   // Module pages always show the ACTIVE company, so switch to this one first.
   const openModule = (path) => {
@@ -158,6 +176,16 @@ const page = () => {
     <PermissionGuard permission="view-companies">
       <PageHeader>
         <div className="d-flex align-items-center gap-2 page-header-right-items-wrapper">
+          {company && hasPermission('medical_patients.create') && (
+            <button
+              type="button"
+              className="btn btn-light-brand"
+              onClick={() => setShowPatientImport(true)}
+            >
+              <FiUpload size={16} className="me-2" />
+              <span>Bulk Upload Patients</span>
+            </button>
+          )}
           {company && (
             <button type="button" className="btn btn-light-brand" onClick={handleExport}>
               <FiDownload size={16} className='me-2' />
@@ -229,7 +257,17 @@ const page = () => {
 
             <h5 className="mb-3">Medical Billing</h5>
             <div className="row">
-              {MEDICAL_STATS.map(({ key, ...stat }) => <StatCard key={key} {...stat} value={counts[key]} onOpen={() => openModule(stat.path)} />)}
+              {MEDICAL_STATS.map(({ key, ...stat }) => (
+                <StatCard
+                  key={key}
+                  {...stat}
+                  value={counts[key]}
+                  onOpen={() => openModule(stat.path)}
+                  actionIcon={key === 'patients' && hasPermission('medical_patients.create') ? FiUpload : undefined}
+                  actionTitle="Bulk Upload Patients"
+                  onAction={key === 'patients' && hasPermission('medical_patients.create') ? () => setShowPatientImport(true) : undefined}
+                />
+              ))}
             </div>
 
             <h5 className="mb-3">Team</h5>
@@ -297,6 +335,14 @@ const page = () => {
           </>
         )}
       </div>
+      {showPatientImport && company && (
+          <PatientImportModal
+            companyId={actualId}
+            companyName={company.name}
+            onClose={() => setShowPatientImport(false)}
+            onImported={fetchOverview}
+          />
+        )}
     </PermissionGuard>
   )
 }
