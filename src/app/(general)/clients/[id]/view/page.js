@@ -149,8 +149,8 @@ const ClientConsolidated = ({ overview, period, onPeriodChange, onOpenCompany })
                     <th className="text-end">Appointments</th>
                     <th className="text-end">Claims</th>
                     <th className="text-end">Denials</th>
-                    <th className="text-end">Charged</th>
-                    <th className="text-end">Collected</th>
+                    <th className="text-end">Billed</th>
+                    <th className="text-end">Paid</th>
                     <th className="text-end">AR Balance</th>
                     <th className="text-end">Users</th>
                     <th></th>
