@@ -12,6 +12,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { decryptId } from '@/utils/decryptId'
 import { encryptId } from '@/utils/encryptId'
 import PatientNotes from '@/components/medicalBilling/PatientNotes'
+import PatientEligibilitySection from '@/components/medicalBilling/PatientEligibilitySection'
 import { formatDate, formatDateTime as formatDateTimeBase, formatDateAndTime } from '@/utils/formatDate'
 
 const Field = ({ label, value }) => (
@@ -436,6 +437,21 @@ const page = () => {
                                             </table>
                                         </div>
                                     )}
+
+                                    <hr className="my-4" />
+
+                                    {/* ── Eligibility Verification ─────────────────────── */}
+                                    <PatientEligibilitySection
+                                        patient={patient}
+                                        patientId={actualId}
+                                        onChecked={(newCheck) => {
+                                            setPatient(prev => prev ? {
+                                                ...prev,
+                                                latest_eligibility_check: newCheck,
+                                                eligibility_checks: [newCheck, ...(prev.eligibility_checks || [])],
+                                            } : prev)
+                                        }}
+                                    />
 
                                     <hr className="my-4" />
 

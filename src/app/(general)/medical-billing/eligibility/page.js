@@ -25,6 +25,8 @@ const page = () => {
     const [showForm, setShowForm] = useState(false)
     const [patientId, setPatientId] = useState('')
     const [payerId, setPayerId] = useState('')
+    const [verificationMode, setVerificationMode] = useState('auto') // 'auto' | 'eligible' | 'not_eligible'
+    const [planName, setPlanName] = useState('')
     const [notes, setNotes] = useState('')
     const [submitting, setSubmitting] = useState(false)
     const [formError, setFormError] = useState('')
@@ -75,13 +77,24 @@ const page = () => {
         setSubmitting(true)
         setFormError('')
         try {
-            const response = await crmInstance.post(`/medical-billing/patients/${patientId}/eligibility-checks`, {
+            const payload = {
                 payer_id: payerId || null,
                 notes: notes || null,
-            })
+            }
+            if (verificationMode === 'eligible') {
+                payload.eligible = true
+                payload.plan_name = planName.trim() || null
+            } else if (verificationMode === 'not_eligible') {
+                payload.eligible = false
+                payload.plan_name = planName.trim() || null
+            }
+
+            const response = await crmInstance.post(`/medical-billing/patients/${patientId}/eligibility-checks`, payload)
             setChecks(prev => [response.data, ...prev])
             setPatientId('')
             setPayerId('')
+            setVerificationMode('auto')
+            setPlanName('')
             setNotes('')
             setShowForm(false)
 
@@ -126,27 +139,41 @@ const page = () => {
                                     {formError && <div className="alert alert-danger">{formError}</div>}
                                     <form onSubmit={handleSubmit}>
                                         <div className="row g-3 align-items-end">
-                                            <div className="col-md-4">
+                                            <div className="col-md-3">
                                                 <label className="form-label">Patient <span className="text-danger">*</span></label>
                                                 <select className="form-select" value={patientId} onChange={(e) => setPatientId(e.target.value)} required disabled={submitting}>
                                                     <option value="">Select patient</option>
                                                     {patients.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name}</option>)}
                                                 </select>
                                             </div>
-                                            <div className="col-md-4">
-                                                <label className="form-label">Payer (optional — defaults to primary insurance)</label>
+                                            <div className="col-md-3">
+                                                <label className="form-label">Payer (optional — defaults to primary)</label>
                                                 <select className="form-select" value={payerId} onChange={(e) => setPayerId(e.target.value)} disabled={submitting}>
                                                     <option value="">Use patient's primary insurance</option>
                                                     {payers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
                                                 </select>
                                             </div>
                                             <div className="col-md-3">
-                                                <label className="form-label">Notes</label>
-                                                <input type="text" className="form-control" value={notes} onChange={(e) => setNotes(e.target.value)} disabled={submitting} />
+                                                <label className="form-label">Verification Mode</label>
+                                                <select className="form-select" value={verificationMode} onChange={(e) => setVerificationMode(e.target.value)} disabled={submitting}>
+                                                    <option value="auto">Live Check (Clearinghouse)</option>
+                                                    <option value="eligible">Manual — Eligible (Active)</option>
+                                                    <option value="not_eligible">Manual — Not Eligible (Inactive)</option>
+                                                </select>
                                             </div>
-                                            <div className="col-md-1">
+                                            {verificationMode !== 'auto' && (
+                                                <div className="col-md-3">
+                                                    <label className="form-label">Plan Name</label>
+                                                    <input type="text" className="form-control" placeholder="e.g. PPO Gold" value={planName} onChange={(e) => setPlanName(e.target.value)} disabled={submitting} />
+                                                </div>
+                                            )}
+                                            <div className={verificationMode !== 'auto' ? 'col-md-10' : 'col-md-2'}>
+                                                <label className="form-label">Notes</label>
+                                                <input type="text" className="form-control" placeholder="Verification remarks..." value={notes} onChange={(e) => setNotes(e.target.value)} disabled={submitting} />
+                                            </div>
+                                            <div className={verificationMode !== 'auto' ? 'col-md-2' : 'col-md-1'}>
                                                 <button type="submit" className="btn btn-primary w-100" disabled={submitting || !patientId}>
-                                                    {submitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : 'Run'}
+                                                    {submitting ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : (verificationMode === 'auto' ? 'Run' : 'Save')}
                                                 </button>
                                             </div>
                                         </div>

@@ -13,6 +13,7 @@ import PermissionGuard from '@/components/shared/PermissionGuard'
 import { formatDate } from '@/utils/formatDate'
 import { usePermissions } from '@/hooks/usePermissions'
 import PatientModal from '@/components/medicalBilling/PatientModal'
+import { EligibilityStatusBadge } from '@/components/medicalBilling/PatientEligibilitySection'
 
 const page = () => {
     const router = useRouter()
@@ -172,6 +173,7 @@ const page = () => {
                                                 <th>DOB</th>
                                                 <th>Phone</th>
                                                 <th>Status</th>
+                                                <th>Eligibility</th>
                                                 <th>Assigned To</th>
                                                 <th className="text-end">Actions</th>
                                             </tr>
@@ -179,13 +181,13 @@ const page = () => {
                                         <tbody>
                                             {loading ? (
                                                 <tr>
-                                                    <td colSpan="9" className="text-center py-4">
+                                                    <td colSpan="10" className="text-center py-4">
                                                         <Spinner classNames={{ label: "text-foreground mt-2" }} label="Loading patients..." variant="spinner" />
                                                     </td>
                                                 </tr>
                                             ) : patients.length === 0 ? (
                                                 <tr>
-                                                    <td colSpan="9" className="text-center py-4">
+                                                    <td colSpan="10" className="text-center py-4">
                                                         {searchTerm ? 'No patients found matching your search.' : 'No patients found.'}
                                                     </td>
                                                 </tr>
@@ -209,6 +211,14 @@ const page = () => {
                                                             <span className={`badge bg-soft-${patient.status === 'active' ? 'success' : 'secondary'} text-${patient.status === 'active' ? 'success' : 'secondary'} text-capitalize`}>
                                                                 {patient.status}
                                                             </span>
+                                                        </td>
+                                                        <td>
+                                                            <EligibilityStatusBadge check={patient.latest_eligibility_check} compact />
+                                                            {patient.latest_eligibility_check?.created_at && (
+                                                                <div className="text-muted" style={{ fontSize: '11px' }}>
+                                                                    {formatDate(patient.latest_eligibility_check.created_at)}
+                                                                </div>
+                                                            )}
                                                         </td>
                                                         <td>
                                                             {/* GET /patients eager-loads assignedTo, which Eloquent

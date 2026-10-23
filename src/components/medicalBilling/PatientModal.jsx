@@ -5,6 +5,8 @@ import Swal from 'sweetalert2'
 import { FiEdit3, FiUser, FiX, FiSave, FiUsers, FiPlus, FiClock, FiEye } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
+import PatientNotes from '@/components/medicalBilling/PatientNotes'
+import PatientEligibilitySection from '@/components/medicalBilling/PatientEligibilitySection'
 import { formatDate, formatDateTime as formatDateTimeBase, toInputDate, formatDateAndTime } from '@/utils/formatDate'
 
 const SKIP_DIFF_FIELDS = ['updated_at', 'created_at', 'id', 'company_id']
@@ -446,6 +448,28 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
                                             </div>
                                         </>
                                     )}
+
+                                    <hr className="my-4" />
+
+                                    <hr className="my-4" />
+
+                                    <PatientEligibilitySection
+                                        patient={patient}
+                                        patientId={patientId}
+                                        compact
+                                        onChecked={(newCheck) => {
+                                            setPatient(prev => prev ? {
+                                                ...prev,
+                                                latest_eligibility_check: newCheck,
+                                                eligibility_checks: [newCheck, ...(prev.eligibility_checks || [])],
+                                            } : prev)
+                                            onSaved && onSaved()
+                                        }}
+                                    />
+
+                                    <hr className="my-4" />
+
+                                    <PatientNotes patientId={patientId} />
 
                                     <hr className="my-4" />
 
