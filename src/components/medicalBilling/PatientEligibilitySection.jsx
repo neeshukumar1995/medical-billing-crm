@@ -126,6 +126,34 @@ const PatientEligibilitySection = ({
     })
     const [savingManual, setSavingManual] = useState(false)
 
+    // In-place eligibility note editing
+    const [editingNoteCheckId, setEditingNoteCheckId] = useState(null)
+    const [noteDraft, setNoteDraft] = useState('')
+    const [savingNote, setSavingNote] = useState(false)
+
+    const handleSaveEligibilityNote = async (checkId) => {
+        if (!checkId) return
+        setSavingNote(true)
+        try {
+            const { data } = await crmInstance.put(`/medical-billing/eligibility-checks/${checkId}/notes`, {
+                notes: noteDraft.trim() || null,
+            })
+            setChecks(prev => prev.map(c => c.id === checkId ? { ...c, notes: data.notes } : c))
+            setEditingNoteCheckId(null)
+            Swal.fire({
+                title: 'Note Saved',
+                text: 'Eligibility note updated successfully.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false,
+            })
+        } catch (err) {
+            Swal.fire('Error', err.response?.data?.message || 'Failed to save eligibility note.', 'error')
+        } finally {
+            setSavingNote(false)
+        }
+    }
+
     useEffect(() => {
         if (Array.isArray(patient?.eligibility_checks) && patient.eligibility_checks.length > 0) {
             setChecks(patient.eligibility_checks)
@@ -458,9 +486,6 @@ const PatientEligibilitySection = ({
                                     <div>
                                         <strong>Live verification is not configured.</strong>{' '}
                                         {meta.detailText}
-                                        {latestCheck?.notes && (
-                                            <div className="mt-1 text-muted">Note: {latestCheck.notes}</div>
-                                        )}
                                     </div>
                                 </div>
                                 {!showManualForm && (
@@ -486,12 +511,69 @@ const PatientEligibilitySection = ({
                                         &middot; Member ID: <strong>{primaryInsurance.member_id}</strong>
                                     </span>
                                 )}
-                                {latestCheck?.notes && (
-                                    <div className="text-muted mt-1">Note: {latestCheck.notes}</div>
-                                )}
                             </div>
                         )}
                     </div>
+
+                    {/* Eligibility Note Section */}
+                    {latestCheck && (
+                        <div className="col-12 mt-2 pt-2 border-top">
+                            <div className="d-flex justify-content-between align-items-center mb-1">
+                                <span className="text-muted small fw-semibold">Eligibility Note:</span>
+                                {editingNoteCheckId !== latestCheck.id && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-link p-0 text-decoration-none"
+                                        onClick={() => {
+                                            setEditingNoteCheckId(latestCheck.id)
+                                            setNoteDraft(latestCheck.notes || '')
+                                        }}
+                                    >
+                                        <FiEdit3 className="me-1" size={12} />
+                                        {latestCheck.notes ? 'Edit Note' : '+ Add Note'}
+                                    </button>
+                                )}
+                            </div>
+                            {editingNoteCheckId === latestCheck.id ? (
+                                <div className="mt-1">
+                                    <textarea
+                                        className="form-control form-control-sm mb-2"
+                                        rows={2}
+                                        placeholder="Enter eligibility notes (e.g. verified copay $20, ded met, auth req)..."
+                                        value={noteDraft}
+                                        onChange={(e) => setNoteDraft(e.target.value)}
+                                        disabled={savingNote}
+                                    />
+                                    <div className="d-flex gap-2 justify-content-end">
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-light"
+                                            onClick={() => setEditingNoteCheckId(null)}
+                                            disabled={savingNote}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="btn btn-sm btn-primary"
+                                            onClick={() => handleSaveEligibilityNote(latestCheck.id)}
+                                            disabled={savingNote}
+                                        >
+                                            {savingNote ? 'Saving...' : 'Save Note'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-dark small">
+                                    {latestCheck.notes ? (
+                                        <span style={{ whiteSpace: 'pre-wrap' }}>{latestCheck.notes}</span>
+                                    ) : (
+                                        <span className="text-muted fst-italic">No eligibility note recorded. Click "+ Add Note" to add remarks.</span>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

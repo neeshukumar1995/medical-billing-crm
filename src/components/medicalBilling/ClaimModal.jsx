@@ -6,6 +6,7 @@ import { FiFileText, FiX, FiCheckCircle, FiSend } from 'react-icons/fi'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
 import { formatDateTime, formatDate } from '@/utils/formatDate'
+import ClaimNotes from './ClaimNotes'
 
 const STATUS_COLORS = {
     draft: 'secondary', ready: 'info', submitted: 'primary', accepted: 'success',
@@ -172,6 +173,10 @@ export default function ClaimModal({ claimId, onClose, onSaved }) {
                                             </li>
                                         ))}
                                     </ul>
+
+                                    <div className="mt-4">
+                                        <ClaimNotes claimId={claim.id} initialNotes={claim.notes} />
+                                    </div>
                                 </>
                             ) : null}
                         </div>

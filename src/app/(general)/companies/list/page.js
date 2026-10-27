@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import PageHeader from '@/components/shared/pageHeader/PageHeader'
-import { FiEdit3, FiEye, FiTrash2, FiUser, FiMapPin, FiImage, FiEdit, FiDownload, FiUpload } from 'react-icons/fi'
+import { FiEdit3, FiEye, FiTrash2, FiUser, FiMapPin, FiImage, FiEdit, FiDownload, FiUpload, FiMessageSquare } from 'react-icons/fi'
 import SelectDropdown from '@/components/shared/SelectDropdown';
 import Link from 'next/link';
 import { encryptId } from '@/utils/encryptId';
@@ -17,6 +17,8 @@ import { formatDate } from '@/utils/formatDate';
 import { useUser } from '@/context/UserContext';
 import { exportToExcel } from '@/utils/exportExcel';
 import SpreadsheetImportModal from '@/components/shared/SpreadsheetImportModal';
+import CompanyNotes from '@/components/companies/CompanyNotes';
+import CompanyNotesModal from '@/components/companies/CompanyNotesModal';
 import { HOME_PATH } from '@/constants/portalScope';
 
 // Constants
@@ -91,6 +93,7 @@ const CompaniesListPage = () => {
     const [showImport, setShowImport] = useState(false)
     const [createMissingClients, setCreateMissingClients] = useState(false)
     const [exporting, setExporting] = useState(false)
+    const [notesCompany, setNotesCompany] = useState(null)
 
     // Client filter = the client chosen in the header switcher (a client id,
     // 'none' for companies without one, or '' when none is chosen yet — then
@@ -675,6 +678,14 @@ const CompaniesListPage = () => {
                                                                                     <FiEye />
                                                                                 </button>
                                                                             )}
+                                                                            <button
+                                                                                type="button"
+                                                                                className="avatar-text avatar-md"
+                                                                                onClick={() => setNotesCompany(company)}
+                                                                                title="Notes"
+                                                                            >
+                                                                                <FiMessageSquare />
+                                                                            </button>
                                                                             {hasPermission('edit-companies') && (
                                                                                 <button
                                                                                     type="button"
@@ -918,6 +929,9 @@ const CompaniesListPage = () => {
                                         </p>
                                     </div>
                                 </div>
+                                <div className="border-top pt-3 mt-2">
+                                    <CompanyNotes companyId={viewCompany.id} />
+                                </div>
                             </div>
                             <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" onClick={closeViewModal}>
@@ -942,6 +956,9 @@ const CompaniesListPage = () => {
                 </div>
             )}
             {showViewModal && viewCompany && <div className="modal-backdrop fade show"></div>}
+            {notesCompany && (
+                <CompanyNotesModal company={notesCompany} onClose={() => setNotesCompany(null)} />
+            )}
         </PermissionGuard>
     )
 }

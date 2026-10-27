@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react'
 import PageHeader from '@/components/shared/pageHeader/PageHeader'
 import { useRouter } from 'next/navigation'
-import { FiEye } from 'react-icons/fi'
+import { FiEye, FiMessageSquare } from 'react-icons/fi'
 import crmInstance from '@/utils/crmInstance'
 import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import ClaimModal from '@/components/medicalBilling/ClaimModal'
+import ClaimNotesModal from '@/components/medicalBilling/ClaimNotesModal'
 
 const STATUS_COLORS = {
     draft: 'secondary', ready: 'info', submitted: 'primary', accepted: 'success',
@@ -22,6 +23,7 @@ const page = () => {
     const [error, setError] = useState('')
     const [statusFilter, setStatusFilter] = useState('')
     const [openClaimId, setOpenClaimId] = useState(null)
+    const [notesClaim, setNotesClaim] = useState(null)
 
     const fetchClaims = async () => {
         try {
@@ -115,6 +117,14 @@ const page = () => {
                                                             </span>
                                                         </td>
                                                         <td className="text-end">
+                                                            <button
+                                                                type="button"
+                                                                className="avatar-text avatar-md me-1"
+                                                                title="Billing Notes"
+                                                                onClick={() => setNotesClaim(c)}
+                                                            >
+                                                                <FiMessageSquare />
+                                                            </button>
                                                             <button type="button" className="avatar-text avatar-md" title="View" onClick={() => setOpenClaimId(c.id)}>
                                                                 <FiEye />
                                                             </button>
@@ -136,6 +146,13 @@ const page = () => {
                     claimId={openClaimId}
                     onClose={() => setOpenClaimId(null)}
                     onSaved={fetchClaims}
+                />
+            )}
+
+            {notesClaim && (
+                <ClaimNotesModal
+                    claim={notesClaim}
+                    onClose={() => setNotesClaim(null)}
                 />
             )}
         </PermissionGuard>

@@ -9,6 +9,7 @@ import PermissionGuard from '@/components/shared/PermissionGuard'
 import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
 import { decryptId } from '@/utils/decryptId'
+import ClaimNotes from '@/components/medicalBilling/ClaimNotes'
 import { formatDateTime, formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = {
@@ -164,7 +165,7 @@ const page = () => {
                                     </div>
                                 </div>
 
-                                <div className="card shadow-lg border-0" style={{ borderRadius: '20px' }}>
+                                <div className="card shadow-lg border-0 mb-4" style={{ borderRadius: '20px' }}>
                                     <div className="card-body">
                                         <h5 className="mb-3">Status History</h5>
                                         <ul className="list-unstyled mb-0">
@@ -179,6 +180,8 @@ const page = () => {
                                         </ul>
                                     </div>
                                 </div>
+
+                                <ClaimNotes claimId={claim.id} initialNotes={claim.notes} />
                             </>
                         ) : null}
                     </div>

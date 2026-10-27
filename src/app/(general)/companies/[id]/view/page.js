@@ -19,6 +19,7 @@ import { encryptId } from '@/utils/encryptId'
 import { formatDate } from '@/utils/formatDate'
 import { IMAGE_BASE_URL } from '@/config/api'
 import PatientImportModal from '@/components/medicalBilling/PatientImportModal'
+import CompanyNotes from '@/components/companies/CompanyNotes'
 import { usePermissions } from '@/hooks/usePermissions'
 
 // `path` = the module list a card opens (inside this company).
@@ -332,6 +333,9 @@ const page = () => {
                 </div>
               </div>
             </div>
+
+            {/* Company Notes */}
+            <CompanyNotes companyId={actualId} />
           </>
         )}
       </div>

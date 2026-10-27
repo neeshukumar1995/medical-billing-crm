@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import PageHeader from '@/components/shared/pageHeader/PageHeader'
 import { useRouter } from 'next/navigation'
-import { FiPlus } from 'react-icons/fi'
+import { FiPlus, FiEdit3 } from 'react-icons/fi'
 import Swal from 'sweetalert2'
 import crmInstance from '@/utils/crmInstance'
 import Spinner from '@/components/shared/Spinner'
@@ -118,6 +118,39 @@ const page = () => {
         }
     }
 
+    const handleEditCheckNote = async (check) => {
+        const { value: text } = await Swal.fire({
+            title: 'Eligibility Note',
+            input: 'textarea',
+            inputLabel: `Notes for ${check.patient ? check.patient.first_name + ' ' + check.patient.last_name : 'Patient'}`,
+            inputValue: check.notes || '',
+            inputPlaceholder: 'Enter verification remarks or eligibility notes...',
+            showCancelButton: true,
+            confirmButtonText: 'Save Note',
+            inputAttributes: {
+                maxlength: 5000,
+            },
+        })
+
+        if (text !== undefined) {
+            try {
+                const response = await crmInstance.put(`/medical-billing/eligibility-checks/${check.id}/notes`, {
+                    notes: text.trim() || null,
+                })
+                setChecks(prev => prev.map(c => c.id === check.id ? { ...c, notes: response.data.notes } : c))
+                Swal.fire({
+                    title: 'Saved',
+                    text: 'Eligibility note has been updated.',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                })
+            } catch (err) {
+                Swal.fire('Error', err.response?.data?.message || 'Failed to update note.', 'error')
+            }
+        }
+    }
+
     return (
         <PermissionGuard permission="medical_eligibility.view" redirect={false}>
             <PageHeader>
@@ -202,13 +235,14 @@ const page = () => {
                                                 <th>Status</th>
                                                 <th>Eligible</th>
                                                 <th>Plan</th>
+                                                <th>Notes</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {loading ? (
-                                                <tr><td colSpan="7" className="text-center py-4"><Spinner label="Loading eligibility checks..." variant="spinner" /></td></tr>
+                                                <tr><td colSpan="8" className="text-center py-4"><Spinner label="Loading eligibility checks..." variant="spinner" /></td></tr>
                                             ) : checks.length === 0 ? (
-                                                <tr><td colSpan="7" className="text-center py-4">No eligibility checks recorded yet.</td></tr>
+                                                <tr><td colSpan="8" className="text-center py-4">No eligibility checks recorded yet.</td></tr>
                                             ) : (
                                                 checks.map((c) => (
                                                     <tr key={c.id}>
@@ -229,6 +263,21 @@ const page = () => {
                                                             )}
                                                         </td>
                                                         <td>{c.plan_name || '—'}</td>
+                                                        <td>
+                                                            <div className="d-flex align-items-center gap-1">
+                                                                <span className="text-truncate" style={{ maxWidth: 160 }} title={c.notes || ''}>
+                                                                    {c.notes || <span className="text-muted">—</span>}
+                                                                </span>
+                                                                <button
+                                                                    type="button"
+                                                                    className="btn btn-sm btn-link p-0 text-muted ms-1"
+                                                                    title={c.notes ? 'Edit note' : 'Add note'}
+                                                                    onClick={() => handleEditCheckNote(c)}
+                                                                >
+                                                                    <FiEdit3 size={13} />
+                                                                </button>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 ))
                                             )}
