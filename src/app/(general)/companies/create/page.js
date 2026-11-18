@@ -9,6 +9,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import { COMPANY_STATUS_OPTIONS } from '@/constants/companyStatus'
 import ClientSelect from '@/components/clients/ClientSelect'
+import CompanySpecialtiesInput from '@/components/companies/CompanySpecialtiesInput'
 import { encryptId } from '@/utils/encryptId'
 import { useUser } from '@/context/UserContext'
 
@@ -21,6 +22,7 @@ const page = () => {
     name: '',
     address: '',
     title: '',
+    specialties: [],
     status: 'Active',
     crm_enabled: true,
     medical_billing_enabled: true,
@@ -96,6 +98,7 @@ const page = () => {
       formDataToSend.append('name', formData.name)
       formDataToSend.append('address', formData.address || '')
       formDataToSend.append('title', formData.title || '')
+      formDataToSend.append('specialties', JSON.stringify(formData.specialties || []))
       formDataToSend.append('status', formData.status)
       formDataToSend.append('client_id', formData.client_id || '')
       formDataToSend.append('crm_enabled', formData.crm_enabled ? '1' : '0')
@@ -226,6 +229,14 @@ const page = () => {
                         disabled={isLoading}
                       />
                     </div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">Specialty</label>
+                    <CompanySpecialtiesInput
+                      value={formData.specialties}
+                      onChange={(list) => setFormData(prev => ({ ...prev, specialties: list }))}
+                      disabled={isLoading}
+                    />
                   </div>
                   <div className="col-md-6 mb-3">
                     <label className="form-label">Status</label>

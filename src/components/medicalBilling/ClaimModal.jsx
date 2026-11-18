@@ -7,6 +7,7 @@ import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
 import { formatDateTime, formatDate } from '@/utils/formatDate'
 import ClaimNotes from './ClaimNotes'
+import ClaimServiceLinesSection from './ClaimServiceLinesSection'
 
 const STATUS_COLORS = {
     draft: 'secondary', ready: 'info', submitted: 'primary', accepted: 'success',
@@ -131,34 +132,16 @@ export default function ClaimModal({ claimId, onClose, onSaved }) {
                                     </div>
 
                                     <hr />
-                                    <h6 className="mb-3">Service Lines</h6>
-                                    <div className="table-responsive mb-4">
-                                        <table className="table table-sm table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>DOS</th>
-                                                    <th>Code</th>
-                                                    <th>Modifiers</th>
-                                                    <th>Units</th>
-                                                    <th>Amount</th>
-                                                    <th>Dx Ptr</th>
-                                                    <th>POS</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {(claim.items || []).map(item => (
-                                                    <tr key={item.id}>
-                                                        <td>{formatDate(item.dos_from)}</td>
-                                                        <td>{item.cpt_hcpcs_code}</td>
-                                                        <td>{item.modifiers || 'N/A'}</td>
-                                                        <td>{item.units}</td>
-                                                        <td>${Number(item.charge_amount).toFixed(2)}</td>
-                                                        <td>{item.diagnosis_pointer || 'N/A'}</td>
-                                                        <td>{item.place_of_service || 'N/A'}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                    <div className="mb-4">
+                                        <ClaimServiceLinesSection
+                                            claim={claim}
+                                            claimId={claimId}
+                                            compact
+                                            onClaimUpdated={(updated) => {
+                                                setClaim(updated)
+                                                onSaved && onSaved()
+                                            }}
+                                        />
                                     </div>
 
                                     <hr />

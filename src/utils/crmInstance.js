@@ -44,6 +44,16 @@ crmInstance.interceptors.request.use((config) => {
         config.headers["X-Company-ID"] = rawCompanyId;
       }
     }
+
+    const rawClientKey = localStorage.getItem("selectedClientKey");
+    if (rawClientKey) {
+      config.headers["X-Client-ID"] = String(rawClientKey);
+    }
+  }
+
+  // Normalize any quoted "all" in URL path segments just in case
+  if (typeof config.url === "string" && (config.url.includes('"all"') || config.url.includes("%22all%22"))) {
+    config.url = config.url.replace(/"all"|%22all%22/g, "all");
   }
 
   if (isFormData(config.data)) {

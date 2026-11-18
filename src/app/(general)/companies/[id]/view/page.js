@@ -20,6 +20,7 @@ import { formatDate } from '@/utils/formatDate'
 import { IMAGE_BASE_URL } from '@/config/api'
 import PatientImportModal from '@/components/medicalBilling/PatientImportModal'
 import CompanyNotes from '@/components/companies/CompanyNotes'
+import { CompanySpecialtiesBadges, parseSpecialties } from '@/components/companies/CompanySpecialtiesInput'
 import { usePermissions } from '@/hooks/usePermissions'
 
 // `path` = the module list a card opens (inside this company).
@@ -142,7 +143,7 @@ const page = () => {
       {
         name: 'Company',
         rows: [
-          ['Company', c.name], ['Client', c.client?.name], ['Title', c.title], ['Address', c.address],
+          ['Company', c.name], ['Client', c.client?.name], ['Title', c.title], ['Specialty', parseSpecialties(c.specialties).join(', ')], ['Address', c.address],
           ['Status', c.status],
           ['Created', c.created_at ? formatDate(c.created_at) : ''], ['Period', periodLabel(period)],
         ].map(([Field, Value]) => ({ Field, Value: Value ?? '' })),
@@ -223,6 +224,11 @@ const page = () => {
                       <span><FiBriefcase className="me-1" />Client: <Link href={`/clients/${encryptId(company.client.id)}/view`}>{company.client.name}</Link></span>
                     )}
                     {company.title && <span>{company.title}</span>}
+                    {parseSpecialties(company.specialties).length > 0 && (
+                      <span className="d-inline-flex align-items-center gap-1">
+                        Specialty: <CompanySpecialtiesBadges specialties={company.specialties} />
+                      </span>
+                    )}
                     {company.address && <span>{company.address}</span>}
                     <span>Created {company.created_at ? formatDate(company.created_at) : 'N/A'}</span>
                   </div>

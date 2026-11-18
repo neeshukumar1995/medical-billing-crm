@@ -350,6 +350,7 @@ export const menuConfig = [
             },
             // Money in (bank account → receipts → deposits), then supplies
             // (vendor → purchase order → stock received into inventory).
+            /*
             {
                 id: 'grp-4',
                 name: "Supply & Finance",
@@ -400,6 +401,8 @@ export const menuConfig = [
                     },
                 ]
             },
+            {
+            */
             {
                 id: 'grp-3',
                 name: "Records & Reports",

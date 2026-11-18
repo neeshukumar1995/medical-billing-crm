@@ -35,6 +35,7 @@ export const decryptId = (encryptedId) => {
   try {
     const decoded = decodeURIComponent(encryptedId);
 
+    if (!decoded.includes(":")) return /^\d+$/.test(decoded) ? decoded : null;
     const [ivHex, cipherText] = decoded.split(":");
 
     const IV = CryptoJS.enc.Hex.parse(ivHex);

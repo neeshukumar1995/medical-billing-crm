@@ -25,15 +25,40 @@ const COMPANY_KEY = 'companyId'
 /** selectedClientKey value for companies that belong to no client. */
 export const NO_CLIENT = 'none'
 
+/** Special values for "All Clients" and "All Companies" in the header switcher. */
+export const ALL_CLIENTS = 'all'
+export const ALL_COMPANIES = 'all'
+
 // Client chosen in the header switcher (see selectedClientKey).
 const CLIENT_KEY = 'selectedClientKey'
+
+// Normalize any legacy unquoted "all" value in localStorage immediately on module load
+// so any component calling JSON.parse(localStorage.getItem('companyId')) never throws.
+if (typeof window !== 'undefined') {
+    try {
+        if (localStorage.getItem(COMPANY_KEY) === ALL_COMPANIES) {
+            localStorage.setItem(COMPANY_KEY, JSON.stringify(ALL_COMPANIES))
+        }
+    } catch { /* ignore storage errors */ }
+}
 
 const readActiveCompanyId = () => {
     if (typeof window === 'undefined') return null
     try {
         const raw = localStorage.getItem(COMPANY_KEY)
-        return raw ? Number(JSON.parse(raw)) : null
+        if (!raw) return null
+        if (raw === ALL_COMPANIES) {
+            localStorage.setItem(COMPANY_KEY, JSON.stringify(ALL_COMPANIES))
+            return ALL_COMPANIES
+        }
+        if (raw === '"all"') return ALL_COMPANIES
+        const parsed = JSON.parse(raw)
+        if (parsed === ALL_COMPANIES) return ALL_COMPANIES
+        const num = Number(parsed)
+        return Number.isFinite(num) && num > 0 ? num : null
     } catch {
+        const raw = localStorage.getItem(COMPANY_KEY)
+        if (raw === ALL_COMPANIES) return ALL_COMPANIES
         return null
     }
 }
@@ -69,10 +94,14 @@ export function UserProvider({ children }) {
                 const me = response.data.user
                 const list = Array.isArray(companiesResponse.data) ? companiesResponse.data : []
 
-                // Keep the stored active company only while the user may
-                // still open it; otherwise fall back to their own company.
+                // Keep the stored active company while the user may still open
+                // it (or when "all" companies is selected); otherwise fall back
+                // to their own company.
                 let activeId = readActiveCompanyId()
-                if (!activeId || (list.length > 0 && !list.some(c => c.id === activeId))) {
+                const isAllSelected = activeId === ALL_COMPANIES && list.length > 0
+                if (isAllSelected) {
+                    localStorage.setItem(COMPANY_KEY, JSON.stringify(ALL_COMPANIES))
+                } else if (!activeId || (list.length > 0 && !list.some(c => c.id === activeId))) {
                     activeId = me.company_id
                     localStorage.setItem(COMPANY_KEY, JSON.stringify(activeId))
                 }
@@ -80,8 +109,18 @@ export function UserProvider({ children }) {
                 // user.company always describes the ACTIVE company, so every
                 // consumer of its module flags (crm_enabled /
                 // medical_billing_enabled) follows the switcher.
-                const active = list.find(c => c.id === activeId)
-                const effectiveUser = activeId === me.company_id || !active ? me : { ...me, company: active }
+                const active = isAllSelected
+                    ? {
+                        ...(me.company || list[0] || {}),
+                        id: me.company_id || list[0]?.id,
+                        name: 'All Companies',
+                        crm_enabled: list.some(c => c.crm_enabled !== false),
+                        medical_billing_enabled: list.some(c => c.medical_billing_enabled !== false),
+                    }
+                    : list.find(c => c.id === activeId)
+                const effectiveUser = !isAllSelected && (activeId === me.company_id || !active)
+                    ? me
+                    : { ...me, company: active }
 
                 setUser(effectiveUser)
                 setPermissions(response.data.permissions || [])
@@ -118,12 +157,17 @@ export function UserProvider({ children }) {
     const role = user?.role || user?.user_role?.name || ''
 
     /**
-     * Makes another company the active one for the whole portal and reloads
-     * (optionally at `redirectTo`) so every page refetches its data.
+     * Makes another company (or ALL_COMPANIES = 'all') the active one for the
+     * whole portal and reloads (optionally at `redirectTo`) so every page
+     * refetches its data.
      */
     const switchCompany = useCallback((companyId, redirectTo = null) => {
-        const id = Number(companyId)
-        localStorage.setItem(COMPANY_KEY, JSON.stringify(id))
+        if (companyId === ALL_COMPANIES || String(companyId) === ALL_COMPANIES) {
+            localStorage.setItem(COMPANY_KEY, JSON.stringify(ALL_COMPANIES))
+        } else {
+            const id = Number(companyId)
+            localStorage.setItem(COMPANY_KEY, JSON.stringify(id))
+        }
         if (redirectTo) {
             window.location.href = redirectTo
         } else {
@@ -139,9 +183,15 @@ export function UserProvider({ children }) {
         const onStorage = (e) => {
             if (e.key !== COMPANY_KEY || !e.newValue) return
             let newId = null
-            try { newId = Number(JSON.parse(e.newValue)) } catch { return }
+            if (e.newValue === ALL_COMPANIES || e.newValue === '"all"') {
+                newId = ALL_COMPANIES
+            } else {
+                try { newId = Number(JSON.parse(e.newValue)) } catch { return }
+            }
             if (!newId || newId === activeCompanyId) return
-            const name = companies.find(c => c.id === newId)?.name || 'another company'
+            const name = newId === ALL_COMPANIES
+                ? 'All Companies'
+                : (companies.find(c => c.id === newId)?.name || 'another company')
             Swal.fire({
                 title: 'Company changed in another tab',
                 text: `The active company is now "${name}". This page will reload so you don't save data into the wrong company.`,
@@ -154,14 +204,16 @@ export function UserProvider({ children }) {
         return () => window.removeEventListener('storage', onStorage)
     }, [activeCompanyId, companies])
 
-    const activeCompany = companies.find(c => c.id === activeCompanyId) || null
+    const activeCompany = activeCompanyId === ALL_COMPANIES
+        ? { id: ALL_COMPANIES, name: 'All Companies' }
+        : (companies.find(c => c.id === activeCompanyId) || null)
 
     // Client chosen in the header switcher (or by opening a client from the
-    // sidebar). No companies are listed — header switcher, Companies list —
-    // until a client is chosen. Remembered across reloads/company switches
-    // in localStorage, cleared on logout. A user who can only see one
-    // client has it chosen automatically.
-    // Values: a client id (string), NO_CLIENT for companies without one, or null.
+    // sidebar). Remembered across reloads/company switches in localStorage,
+    // cleared on logout. A user who can only see one client has it chosen
+    // automatically.
+    // Values: a client id (string), NO_CLIENT for companies without one,
+    // ALL_CLIENTS ('all') for all clients, or null.
     const [pickedClientKey, setPickedClientKeyState] = useState(null)
     useEffect(() => {
         try {
@@ -183,7 +235,7 @@ export function UserProvider({ children }) {
     )
     const selectedClientKey = clientKeys.length === 1
         ? clientKeys[0]
-        : (pickedClientKey && clientKeys.includes(pickedClientKey) ? pickedClientKey : null)
+        : (pickedClientKey && (pickedClientKey === ALL_CLIENTS || clientKeys.includes(pickedClientKey)) ? pickedClientKey : null)
 
     const value = {
         user,
@@ -200,7 +252,7 @@ export function UserProvider({ children }) {
         activeCompanyId,
         activeCompany,
         switchCompany,
-        selectedClientKey,     // chosen client: id string, NO_CLIENT, or null (none chosen yet)
+        selectedClientKey,     // chosen client: id string, NO_CLIENT, ALL_CLIENTS ('all'), or null (none chosen yet)
         setSelectedClientKey,
     }
 

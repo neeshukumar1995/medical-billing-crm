@@ -7,6 +7,7 @@ import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
 import PatientNotes from '@/components/medicalBilling/PatientNotes'
 import PatientEligibilitySection from '@/components/medicalBilling/PatientEligibilitySection'
+import PatientRelatedRecordsSection from '@/components/medicalBilling/PatientRelatedRecordsSection'
 import { formatDate, formatDateTime as formatDateTimeBase, toInputDate, formatDateAndTime } from '@/utils/formatDate'
 
 const SKIP_DIFF_FIELDS = ['updated_at', 'created_at', 'id', 'company_id']
@@ -184,8 +185,26 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
+        setFormData(prev => {
+            const next = { ...prev, [name]: value }
+            if (name === 'status' && value !== 'active') {
+                next.assigned_to = ''
+            }
+            return next
+        })
     }
+
+    const isPatientDeadLead = Boolean(
+        patient && (
+            ['dead', 'inactive', 'deceased', 'archived'].includes(patient.status) ||
+            (patient.latest_eligibility_check?.status === 'checked' && patient.latest_eligibility_check?.eligible === false)
+        )
+    )
+
+    const isEditFormDeadOrIneligible = Boolean(
+        formData.status !== 'active' ||
+        (patient?.latest_eligibility_check?.status === 'checked' && patient?.latest_eligibility_check?.eligible === false)
+    )
 
     const handleEditClick = () => {
         if (patient) setFormData(toFormData(patient))
@@ -307,11 +326,18 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
                                         <div>
                                             <h4 className="fw-bold mb-0">
                                                 {[patient.first_name, patient.middle_name, patient.last_name].filter(Boolean).join(' ')}
-                                                <span className={`badge bg-soft-${patient.status === 'active' ? 'success' : 'secondary'} text-${patient.status === 'active' ? 'success' : 'secondary'} text-capitalize ms-2`}>
-                                                    {patient.status}
+                                                <span className={`badge bg-soft-${isPatientDeadLead ? 'danger' : 'success'} text-${isPatientDeadLead ? 'danger' : 'success'} ms-2`}>
+                                                    {isPatientDeadLead ? 'Dead Lead' : 'Active Lead'}
                                                 </span>
                                             </h4>
-                                            <p className="text-muted mb-0">Patient # {patient.patient_number}</p>
+                                            <p className="text-muted mb-0">
+                                                Patient # {patient.patient_number}
+                                                {(patient.company?.name || patient.company?.title) && (
+                                                    <span className="ms-2 badge bg-soft-primary text-primary">
+                                                        Company: {patient.company?.name || patient.company?.title}
+                                                    </span>
+                                                )}
+                                            </p>
                                         </div>
                                         {hasPermission('medical_patients.edit') && (
                                             <button type="button" className="btn btn-primary" onClick={handleEditClick}>
@@ -322,6 +348,7 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
                                     </div>
 
                                     <div className="row g-4">
+                                        <Field label="Company Name" value={patient.company?.name || patient.company?.title} />
                                         <Field label="Date of Birth" value={formatDate(patient.date_of_birth)} />
                                         <Field label="Gender" value={patient.gender} />
                                         <Field label="Phone" value={patient.phone} />
@@ -338,36 +365,42 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
 
                                     <div className="d-flex align-items-center justify-content-between mb-3">
                                         <h6 className="mb-0 d-flex align-items-center gap-2"><FiUsers /> Assigned Team</h6>
-                                        {hasPermission('medical_patients.assign') && !showAssigneeForm && (
+                                        {hasPermission('medical_patients.assign') && !showAssigneeForm && !isPatientDeadLead && (
                                             <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => setShowAssigneeForm(true)}>
                                                 <FiPlus className="me-1" /> Add Team Member
                                             </button>
                                         )}
                                     </div>
 
-                                    <div className="d-flex flex-wrap gap-2 mb-3">
-                                        {assignedUser?.name ? (
-                                            <span className="badge bg-soft-info text-info px-3 py-2">
-                                                {assignedUser.name} <span className="fw-normal">(Primary)</span>
-                                            </span>
-                                        ) : (
-                                            <span className="text-muted small">No primary assignee</span>
-                                        )}
-                                        {(patient.assignees || []).map(a => (
-                                            <span key={a.id} className="badge bg-soft-secondary text-secondary px-3 py-2 d-inline-flex align-items-center gap-2">
-                                                {a.name}
-                                                {hasPermission('medical_patients.assign') && (
-                                                    <button
-                                                        type="button"
-                                                        className="btn-close btn-close-sm"
-                                                        style={{ fontSize: '0.55rem' }}
-                                                        title="Remove"
-                                                        onClick={() => handleRemoveAssignee(a.id, a.name)}
-                                                    ></button>
-                                                )}
-                                            </span>
-                                        ))}
-                                    </div>
+                                    {isPatientDeadLead ? (
+                                        <div className="alert alert-danger py-2 px-3 small mb-3">
+                                            This patient is marked as a <strong>Dead Lead</strong> (Not Eligible / Inactive) and cannot be assigned to Billing.
+                                        </div>
+                                    ) : (
+                                        <div className="d-flex flex-wrap gap-2 mb-3">
+                                            {assignedUser?.name ? (
+                                                <span className="badge bg-soft-info text-info px-3 py-2">
+                                                    {assignedUser.name} <span className="fw-normal">(Primary)</span>
+                                                </span>
+                                            ) : (
+                                                <span className="text-muted small">No primary assignee — Assign this patient to move them into Billing.</span>
+                                            )}
+                                            {(patient.assignees || []).map(a => (
+                                                <span key={a.id} className="badge bg-soft-secondary text-secondary px-3 py-2 d-inline-flex align-items-center gap-2">
+                                                    {a.name}
+                                                    {hasPermission('medical_patients.assign') && (
+                                                        <button
+                                                            type="button"
+                                                            className="btn-close btn-close-sm"
+                                                            style={{ fontSize: '0.55rem' }}
+                                                            title="Remove"
+                                                            onClick={() => handleRemoveAssignee(a.id, a.name)}
+                                                        ></button>
+                                                    )}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
 
                                     {showAssigneeForm && (
                                         <form onSubmit={handleAddAssignee} className="border rounded p-3 mb-3 d-flex align-items-end gap-2">
@@ -422,7 +455,7 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
                                         </>
                                     )}
 
-                                    {patient.appointments && patient.appointments.length > 0 && (
+                                    {false && patient.appointments && patient.appointments.length > 0 && (
                                         <>
                                             <hr className="my-4" />
                                             <h6 className="mb-2">Recent Appointments</h6>
@@ -451,20 +484,33 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
 
                                     <hr className="my-4" />
 
-                                    <hr className="my-4" />
-
                                     <PatientEligibilitySection
                                         patient={patient}
                                         patientId={patientId}
                                         compact
                                         onChecked={(newCheck) => {
+                                            const isIneligible = newCheck?.status === 'checked' && newCheck?.eligible === false
+                                            const isEligible = newCheck?.status === 'checked' && newCheck?.eligible === true
                                             setPatient(prev => prev ? {
                                                 ...prev,
+                                                status: isIneligible ? 'dead' : (isEligible && ['dead', 'inactive'].includes(prev.status) ? 'active' : prev.status),
+                                                assigned_to: isIneligible ? null : prev.assigned_to,
+                                                assignees: isIneligible ? [] : prev.assignees,
                                                 latest_eligibility_check: newCheck,
                                                 eligibility_checks: [newCheck, ...(prev.eligibility_checks || [])],
                                             } : prev)
                                             onSaved && onSaved()
                                         }}
+                                    />
+
+                                    <hr className="my-4" />
+
+                                    <PatientRelatedRecordsSection
+                                        patient={patient}
+                                        patientId={patientId}
+                                        compact
+                                        onRefresh={fetchPatient}
+                                        onCloseModal={onClose}
                                     />
 
                                     <hr className="my-4" />
@@ -552,7 +598,8 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
                                         <div className="col-md-4">
                                             <label className="form-label">Status</label>
                                             <select name="status" className="form-select" value={formData.status} onChange={handleInputChange} disabled={isSaving}>
-                                                <option value="active">Active</option>
+                                                <option value="active">Active Lead</option>
+                                                <option value="dead">Dead Lead</option>
                                                 <option value="inactive">Inactive</option>
                                                 <option value="deceased">Deceased</option>
                                                 <option value="archived">Archived</option>
@@ -560,11 +607,22 @@ export default function PatientModal({ patientId, onClose, onSaved, initialMode 
                                         </div>
                                         {hasPermission('medical_patients.assign') && (
                                             <div className="col-md-4">
-                                                <label className="form-label d-flex align-items-center gap-1"><FiUser size={14} /> Assigned To</label>
-                                                <select name="assigned_to" className="form-select" value={formData.assigned_to} onChange={handleInputChange} disabled={isSaving}>
-                                                    <option value="">Unassigned</option>
+                                                <label className="form-label d-flex align-items-center gap-1"><FiUser size={14} /> Assigned To (Billing)</label>
+                                                <select
+                                                    name="assigned_to"
+                                                    className="form-select"
+                                                    value={isEditFormDeadOrIneligible ? '' : formData.assigned_to}
+                                                    onChange={handleInputChange}
+                                                    disabled={isSaving || isEditFormDeadOrIneligible}
+                                                >
+                                                    <option value="">Unassigned (Not in Billing)</option>
                                                     {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                                 </select>
+                                                {isEditFormDeadOrIneligible && (
+                                                    <div className="text-danger small mt-1">
+                                                        Dead / Not Eligible leads cannot be assigned to Billing.
+                                                    </div>
+                                                )}
                                             </div>
                                         )}
                                         <div className="col-md-12">

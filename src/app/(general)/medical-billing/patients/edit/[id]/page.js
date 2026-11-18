@@ -37,6 +37,7 @@ const page = () => {
     const { hasPermission } = usePermissions()
 
     const [formData, setFormData] = useState(emptyForm)
+    const [latestCheck, setLatestCheck] = useState(null)
     const [users, setUsers] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [isFetching, setIsFetching] = useState(true)
@@ -88,6 +89,7 @@ const page = () => {
                     // plain id. Pull the id back out for the <select>.
                     assigned_to: p.assigned_to?.id ?? p.assigned_to ?? '',
                 })
+                setLatestCheck(p.latest_eligibility_check || null)
                 setError('')
             } catch (err) {
                 setError(err.response?.data?.message || 'Failed to load patient data.')
@@ -101,8 +103,19 @@ const page = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
+        setFormData(prev => {
+            const next = { ...prev, [name]: value }
+            if (name === 'status' && value !== 'active') {
+                next.assigned_to = ''
+            }
+            return next
+        })
     }
+
+    const isDeadOrIneligible = Boolean(
+        formData.status !== 'active' ||
+        (latestCheck?.status === 'checked' && latestCheck?.eligible === false)
+    )
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -199,7 +212,8 @@ const page = () => {
                                             <div className="col-md-4">
                                                 <label className="form-label">Status</label>
                                                 <select name="status" className="form-select" value={formData.status} onChange={handleInputChange} disabled={isLoading}>
-                                                    <option value="active">Active</option>
+                                                    <option value="active">Active Lead</option>
+                                                    <option value="dead">Dead Lead</option>
                                                     <option value="inactive">Inactive</option>
                                                     <option value="deceased">Deceased</option>
                                                     <option value="archived">Archived</option>
@@ -207,11 +221,22 @@ const page = () => {
                                             </div>
                                             {hasPermission('medical_patients.assign') && (
                                                 <div className="col-md-4">
-                                                    <label className="form-label d-flex align-items-center gap-1"><FiUser size={14} /> Assigned To</label>
-                                                    <select name="assigned_to" className="form-select" value={formData.assigned_to} onChange={handleInputChange} disabled={isLoading}>
-                                                        <option value="">Unassigned</option>
+                                                    <label className="form-label d-flex align-items-center gap-1"><FiUser size={14} /> Assigned To (Billing)</label>
+                                                    <select
+                                                        name="assigned_to"
+                                                        className="form-select"
+                                                        value={isDeadOrIneligible ? '' : formData.assigned_to}
+                                                        onChange={handleInputChange}
+                                                        disabled={isLoading || isDeadOrIneligible}
+                                                    >
+                                                        <option value="">Unassigned (Not in Billing)</option>
                                                         {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                                     </select>
+                                                    {isDeadOrIneligible && (
+                                                        <div className="text-danger small mt-1">
+                                                            Dead / Not Eligible leads cannot be assigned to Billing.
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                             <div className="col-md-12">

@@ -19,6 +19,7 @@ import { exportToExcel } from '@/utils/exportExcel';
 import SpreadsheetImportModal from '@/components/shared/SpreadsheetImportModal';
 import CompanyNotes from '@/components/companies/CompanyNotes';
 import CompanyNotesModal from '@/components/companies/CompanyNotesModal';
+import CompanySpecialtiesInput, { CompanySpecialtiesBadges, parseSpecialties } from '@/components/companies/CompanySpecialtiesInput';
 import { HOME_PATH } from '@/constants/portalScope';
 
 // Constants
@@ -86,8 +87,8 @@ const CompaniesListPage = () => {
     const observerRef = useRef(null);
 
     const debouncedSearchTerm = useDebounce(searchTerm, DEBOUNCE_DELAY);
-    const colSpanCount = hasPermission('edit-companies') ? 8 : 7;
-    const { isPlatform, selectedClientKey, setSelectedClientKey, activeCompanyId, switchCompany } = useUser()
+    const colSpanCount = hasPermission('edit-companies') ? 9 : 8;
+    const { isPlatform, role, refetchUser, selectedClientKey, setSelectedClientKey, activeCompanyId, switchCompany } = useUser()
 
     // Excel import / export
     const [showImport, setShowImport] = useState(false)
@@ -104,7 +105,7 @@ const CompaniesListPage = () => {
         setExporting(true)
         try {
             const params = { with_counts: 1 }
-            if (clientFilter && clientFilter !== 'none') params.client_id = clientFilter
+            if (clientFilter && clientFilter !== 'none' && clientFilter !== 'all') params.client_id = clientFilter
             const { data } = await crmInstance.get('/companies', { params })
             let list = Array.isArray(data) ? data : (data?.data || [])
             if (clientFilter === 'none') list = list.filter(c => !c.client_id)
@@ -114,6 +115,7 @@ const CompaniesListPage = () => {
                     'Company Name': c.name,
                     'Client': c.client?.name || '',
                     'Title': c.title || '',
+                    'Specialty': parseSpecialties(c.specialties).join(', '),
                     'Email': c.email || '',
                     'Phone': c.phone || '',
                     'Address': c.address || '',
@@ -136,7 +138,7 @@ const CompaniesListPage = () => {
     const [showFormModal, setShowFormModal] = useState(false)
     const [modalMode, setModalMode] = useState('create')
     const [editingCompanyId, setEditingCompanyId] = useState(null)
-    const [formData, setFormData] = useState({ client_id: '', name: '', address: '', title: '', status: 'Active', crm_enabled: true, medical_billing_enabled: true, logo: null })
+    const [formData, setFormData] = useState({ client_id: '', name: '', address: '', title: '', specialties: [], status: 'Active', crm_enabled: true, medical_billing_enabled: true, logo: null })
     const [formSaving, setFormSaving] = useState(false)
     const [formError, setFormError] = useState('')
 
@@ -168,7 +170,9 @@ const CompaniesListPage = () => {
     const filteredCompanies = useMemo(() => {
         if (!clientFilter) return []
         let list = companies
-        if (clientFilter === 'none') {
+        if (clientFilter === 'all') {
+            // All clients selected: keep all companies
+        } else if (clientFilter === 'none') {
             list = list.filter(company => !company.client_id)
         } else if (clientFilter) {
             list = list.filter(company => String(company.client_id) === clientFilter)
@@ -322,6 +326,13 @@ const CompaniesListPage = () => {
                 status: newStatus
             });
 
+            if (newStatus !== 'Active' && role !== 'superadmin') {
+                setCompanies(prevCompanies => prevCompanies.filter(c => c.id !== companyId));
+            }
+            if (typeof refetchUser === 'function') {
+                refetchUser();
+            }
+
             Swal.fire({
                 title: 'Updated!',
                 text: `Company status has been updated to ${newStatus}.`,
@@ -369,6 +380,7 @@ const CompaniesListPage = () => {
             name: company.name || '',
             address: company.address || '',
             title: company.title || '',
+            specialties: parseSpecialties(company.specialties),
             status: company.status || 'Active',
             crm_enabled: company.crm_enabled !== false,
             medical_billing_enabled: company.medical_billing_enabled !== false,
@@ -413,6 +425,7 @@ const CompaniesListPage = () => {
             formDataToSend.append('name', formData.name)
             formDataToSend.append('address', formData.address || '')
             formDataToSend.append('title', formData.title || '')
+            formDataToSend.append('specialties', JSON.stringify(formData.specialties || []))
             formDataToSend.append('status', formData.status)
             formDataToSend.append('client_id', formData.client_id || '')
             formDataToSend.append('crm_enabled', formData.crm_enabled ? '1' : '0')
@@ -427,13 +440,20 @@ const CompaniesListPage = () => {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 })
                 const updated = response.data?.data || response.data || {}
-                setCompanies(prev => prev.map(c => c.id === editingCompanyId ? { ...c, ...updated } : c))
+                if (updated.status && updated.status !== 'Active' && role !== 'superadmin') {
+                    setCompanies(prev => prev.filter(c => c.id !== editingCompanyId))
+                } else {
+                    setCompanies(prev => prev.map(c => c.id === editingCompanyId ? { ...c, ...updated } : c))
+                }
             } else {
                 const response = await crmInstance.post('/companies', formDataToSend, {
                     headers: { 'Content-Type': 'multipart/form-data' }
                 })
                 const created = response.data?.data || response.data
                 setCompanies(prev => [created, ...prev])
+            }
+            if (typeof refetchUser === 'function') {
+                refetchUser()
             }
 
             setShowFormModal(false)
@@ -526,7 +546,7 @@ const CompaniesListPage = () => {
                                         <div className='dataTables_filter d-flex flex-wrap align-items-center justify-content-end gap-3'>
                                             {clientFilter && (
                                                 <h6 className="mb-0 me-auto">
-                                                    {clientFilter === 'none' ? 'Companies without a client' : `${selectedClientName} — companies`}
+                                                    {clientFilter === 'all' ? 'All Clients — companies' : (clientFilter === 'none' ? 'Companies without a client' : `${selectedClientName} — companies`)}
                                                     <span className="text-muted fw-normal ms-1">({filteredCompanies.length})</span>
                                                     <span className="d-block fs-12 text-muted fw-normal">Click <strong>Open</strong> to work in a company.</span>
                                                 </h6>
@@ -540,6 +560,7 @@ const CompaniesListPage = () => {
                                                         onChange={(e) => handleClientFilterChange(e.target.value)}
                                                     >
                                                         <option value="">— Select client —</option>
+                                                        <option value="all">All Clients</option>
                                                         {clientOptions.map(([id, name]) => (
                                                             <option key={id} value={id}>{name}</option>
                                                         ))}
@@ -573,6 +594,7 @@ const CompaniesListPage = () => {
                                                             <th>Company Name</th>
                                                             <th>Client</th>
                                                             <th>Title</th>
+                                                            <th>Specialty</th>
                                                             <th>Address</th>
                                                             {hasPermission('edit-companies') && (
                                                                 <th>Status</th>
@@ -625,7 +647,7 @@ const CompaniesListPage = () => {
                                                                     </td>
                                                                     <td>
                                                                         <div className="hstack gap-3">
-                                                                            <Link href={`/companies/${encryptId(company.id)}/view`} className="text-truncate-1-line fw-semibold" title="View full company data">
+                                                                            <Link href={`/companies/${encryptId(company.id)}/view`} className="fw-semibold" title={company.name || 'View full company data'}>
                                                                                 {company.name || 'N/A'}
                                                                             </Link>
                                                                         </div>
@@ -637,8 +659,11 @@ const CompaniesListPage = () => {
                                                                     </td>
                                                                     <td>
                                                                         <div className="hstack gap-3">
-                                                                            <div className="text-truncate-1-line">{company.title || 'N/A'}</div>
+                                                                            <div>{company.title || 'N/A'}</div>
                                                                         </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <CompanySpecialtiesBadges specialties={company.specialties} />
                                                                     </td>
                                                                     <td>
                                                                         {company.address || 'N/A'}
@@ -815,6 +840,15 @@ const CompaniesListPage = () => {
                                     </div>
 
                                     <div className="mb-3">
+                                        <label className="form-label">Specialty</label>
+                                        <CompanySpecialtiesInput
+                                            value={formData.specialties}
+                                            onChange={(list) => setFormData(prev => ({ ...prev, specialties: list }))}
+                                            disabled={formSaving}
+                                        />
+                                    </div>
+
+                                    <div className="mb-3">
                                         <label className="form-label">Status</label>
                                         <select
                                             name="status"
@@ -906,6 +940,12 @@ const CompaniesListPage = () => {
                                 </div>
 
                                 <div className="row">
+                                    <div className="col-md-12 mb-3">
+                                        <label className="form-label fw-bold">Specialty</label>
+                                        <div className="mt-1">
+                                            <CompanySpecialtiesBadges specialties={viewCompany.specialties} />
+                                        </div>
+                                    </div>
                                     <div className="col-md-6 mb-3">
                                         <label className="form-label fw-bold">Address</label>
                                         <p className="form-control-plaintext mb-0">{viewCompany.address || 'N/A'}</p>

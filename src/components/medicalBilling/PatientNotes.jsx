@@ -86,15 +86,15 @@ const PatientNotes = ({ patientId }) => {
     return (
         <div>
             <div className="d-flex align-items-center justify-content-between mb-3">
-                <h5 className="mb-0 d-flex align-items-center gap-2"><FiMessageSquare /> Notes</h5>
-                <span className="text-muted fs-12">{notes.length} note{notes.length === 1 ? '' : 's'}</span>
+                <h5 className="mb-0 d-flex align-items-center gap-2"><FiMessageSquare /> Billing Notes</h5>
+                <span className="text-muted fs-12">{notes.length} billing note{notes.length === 1 ? '' : 's'}</span>
             </div>
 
             <form onSubmit={addNote} className="mb-3">
                 <textarea
                     className="form-control mb-2"
                     rows={3}
-                    placeholder="Add a note — call made, follow-up, billing remark…"
+                    placeholder="Add a billing note — call made, follow-up, billing remark…"
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
                     disabled={saving}
@@ -102,15 +102,15 @@ const PatientNotes = ({ patientId }) => {
                 />
                 <div className="text-end">
                     <button type="submit" className="btn btn-sm btn-primary" disabled={saving || !draft.trim()}>
-                        {saving ? 'Saving…' : 'Add Note'}
+                        {saving ? 'Saving…' : 'Add Billing Note'}
                     </button>
                 </div>
             </form>
 
             {loading ? (
-                <p className="text-muted small">Loading notes…</p>
+                <p className="text-muted small">Loading billing notes…</p>
             ) : notes.length === 0 ? (
-                <p className="text-muted small">No notes yet.</p>
+                <p className="text-muted small">No billing notes yet.</p>
             ) : (
                 <ul className="list-group">
                     {notes.map(note => (

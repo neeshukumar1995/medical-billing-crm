@@ -29,7 +29,7 @@ const page = () => {
         (async () => {
             try {
                 const [pRes, drRes, posRes] = await Promise.all([
-                    crmInstance.get('/medical-billing/patients', { params: { per_page: 500 } }),
+                    crmInstance.get('/medical-billing/patients', { params: { per_page: 500, ready_for_billing: 1 } }),
                     crmInstance.get('/medical-billing/providers', { params: { per_page: 500 } }),
                     crmInstance.get('/medical-billing/place-of-services'),
                 ])
@@ -97,9 +97,12 @@ const page = () => {
                                         <div className="col-md-6">
                                             <label className="form-label">Patient <span className="text-danger">*</span></label>
                                             <select name="patient_id" className="form-select" value={formData.patient_id} onChange={handleInputChange} required disabled={isLoading}>
-                                                <option value="">Select patient</option>
+                                                <option value="">Select assigned active patient</option>
                                                 {patients.map(p => <option key={p.id} value={p.id}>{p.first_name} {p.last_name} ({p.patient_number})</option>)}
                                             </select>
+                                            <div className="text-muted small mt-1">
+                                                Only Active Leads that have been Assigned appear here for Billing.
+                                            </div>
                                         </div>
                                         <div className="col-md-6">
                                             <label className="form-label">Provider <span className="text-danger">*</span></label>

@@ -11,6 +11,7 @@ import Link from 'next/link'
 import { decryptId } from '@/utils/decryptId'
 import { COMPANY_STATUS_OPTIONS } from '@/constants/companyStatus'
 import ClientSelect from '@/components/clients/ClientSelect'
+import CompanySpecialtiesInput, { parseSpecialties } from '@/components/companies/CompanySpecialtiesInput'
 
 
 const page = () => {
@@ -28,6 +29,7 @@ const page = () => {
     name: '',
     address: '',
     title: '',
+    specialties: [],
     status: 'Active',
     crm_enabled: true,
     medical_billing_enabled: true,
@@ -95,6 +97,7 @@ const page = () => {
         name: companyData.name || '',
         address: companyData.address || '',
         title: companyData.title || '',
+        specialties: parseSpecialties(companyData.specialties),
         status: companyData.status || 'Active',
         crm_enabled: companyData.crm_enabled !== false,
         medical_billing_enabled: companyData.medical_billing_enabled !== false,
@@ -123,6 +126,7 @@ const page = () => {
       formDataToSend.append('name', formData.name)
       formDataToSend.append('address', formData.address || '')
       formDataToSend.append('title', formData.title || '')
+      formDataToSend.append('specialties', JSON.stringify(formData.specialties || []))
       formDataToSend.append('status', formData.status)
       formDataToSend.append('client_id', formData.client_id || '')
       formDataToSend.append('crm_enabled', formData.crm_enabled ? '1' : '0')
@@ -253,6 +257,14 @@ const page = () => {
                        disabled={saving}
                      />
                    </div>
+                 </div>
+                 <div className="col-md-6 mb-3">
+                   <label className="form-label">Specialty</label>
+                   <CompanySpecialtiesInput
+                     value={formData.specialties}
+                     onChange={(list) => setFormData(prev => ({ ...prev, specialties: list }))}
+                     disabled={saving}
+                   />
                  </div>
                  <div className="col-md-6 mb-3">
                    <label className="form-label">Status</label>

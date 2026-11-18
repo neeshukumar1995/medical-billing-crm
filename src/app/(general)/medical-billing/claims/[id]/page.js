@@ -10,6 +10,7 @@ import Spinner from '@/components/shared/Spinner'
 import { usePermissions } from '@/hooks/usePermissions'
 import { decryptId } from '@/utils/decryptId'
 import ClaimNotes from '@/components/medicalBilling/ClaimNotes'
+import ClaimServiceLinesSection from '@/components/medicalBilling/ClaimServiceLinesSection'
 import { formatDateTime, formatDate } from '@/utils/formatDate'
 
 const STATUS_COLORS = {
@@ -133,35 +134,11 @@ const page = () => {
 
                                 <div className="card shadow-lg border-0 mb-4" style={{ borderRadius: '20px' }}>
                                     <div className="card-body">
-                                        <h5 className="mb-3">Service Lines</h5>
-                                        <div className="table-responsive">
-                                            <table className="table table-sm table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>DOS</th>
-                                                        <th>Code</th>
-                                                        <th>Modifiers</th>
-                                                        <th>Units</th>
-                                                        <th>Amount</th>
-                                                        <th>Dx Ptr</th>
-                                                        <th>POS</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {(claim.items || []).map(item => (
-                                                        <tr key={item.id}>
-                                                            <td>{formatDate(item.dos_from)}</td>
-                                                            <td>{item.cpt_hcpcs_code}</td>
-                                                            <td>{item.modifiers || 'N/A'}</td>
-                                                            <td>{item.units}</td>
-                                                            <td>${Number(item.charge_amount).toFixed(2)}</td>
-                                                            <td>{item.diagnosis_pointer || 'N/A'}</td>
-                                                            <td>{item.place_of_service || 'N/A'}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                        <ClaimServiceLinesSection
+                                            claim={claim}
+                                            claimId={actualId}
+                                            onClaimUpdated={(updated) => setClaim(updated)}
+                                        />
                                     </div>
                                 </div>
 

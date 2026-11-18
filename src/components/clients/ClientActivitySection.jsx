@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState, useCallback } from 'react'
-import { FiClock } from 'react-icons/fi'
+import { FiClock, FiUser } from 'react-icons/fi'
 import crmInstance from '@/utils/crmInstance'
 import { formatDateTime } from '@/utils/formatDate'
 
@@ -49,29 +49,40 @@ const ClientActivitySection = ({ clientId, refreshKey }) => {
     useEffect(() => { load(1, false) }, [load, refreshKey])
 
     return (
-        <div className="card mb-4">
-            <div className="card-header">
-                <h5 className="card-title mb-0"><FiClock className="me-2" />Activity</h5>
+        <div className="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+            <div className="card-header bg-white border-bottom py-3 px-4 d-flex align-items-center gap-2">
+                <div className="avatar-text avatar-sm bg-soft-info text-info rounded-3 shadow-none">
+                    <FiClock size={15} />
+                </div>
+                <div>
+                    <h5 className="card-title mb-0 fw-bold text-dark">Activity History</h5>
+                    <span className="fs-12 text-muted">Audit trail of updates across this client and its linked companies</span>
+                </div>
             </div>
             <div className="card-body p-0">
                 {logs.length === 0 && !loading ? (
-                    <div className="text-muted text-center py-4 fs-13">No activity recorded yet.</div>
+                    <div className="text-muted text-center py-5 fs-13">No activity recorded yet.</div>
                 ) : (
                     <ul className="list-group list-group-flush">
                         {logs.map(log => {
                             const change = describeChange(log.old_values, log.new_values)
                             return (
-                                <li key={log.id} className="list-group-item">
-                                    <div className="d-flex align-items-start gap-2">
-                                        <span className={`badge ${ACTION_BADGE[log.action] || 'bg-soft-secondary text-secondary'}`}>
-                                            {log.action.replace(/_/g, ' ')}
-                                        </span>
-                                        <div className="flex-grow-1">
-                                            <div className="fs-13">{log.description}</div>
-                                            {change && <div className="fs-12 text-muted">{change}</div>}
+                                <li key={log.id} className="list-group-item px-4 py-3">
+                                    <div className="d-flex flex-wrap align-items-start justify-content-between gap-2">
+                                        <div className="d-flex align-items-start gap-2.5 flex-grow-1">
+                                            <span className={`badge rounded-pill px-2.5 py-1 text-capitalize mt-0.5 ${ACTION_BADGE[log.action] || 'bg-soft-secondary text-secondary'}`}>
+                                                {log.action.replace(/_/g, ' ')}
+                                            </span>
+                                            <div>
+                                                <div className="fs-13 fw-semibold text-dark">{log.description}</div>
+                                                {change && <div className="fs-12 text-muted mt-0.5">{change}</div>}
+                                            </div>
                                         </div>
                                         <div className="text-end fs-12 text-muted text-nowrap">
-                                            <div>{log.user_name || 'System'}</div>
+                                            <div className="fw-semibold text-dark d-inline-flex align-items-center gap-1">
+                                                <FiUser size={11} className="text-muted" />
+                                                {log.user_name || 'System'}
+                                            </div>
                                             {/* DB timestamp "Y-m-d H:i:s" — the T makes it ISO so every browser parses it */}
                                             <div>{log.created_at ? formatDateTime(String(log.created_at).replace(' ', 'T')) : ''}</div>
                                         </div>
@@ -82,9 +93,9 @@ const ClientActivitySection = ({ clientId, refreshKey }) => {
                     </ul>
                 )}
                 {meta.current_page < meta.last_page && (
-                    <div className="text-center p-2">
-                        <button className="btn btn-sm btn-light-brand" disabled={loading} onClick={() => load(meta.current_page + 1, true)}>
-                            {loading ? 'Loading...' : 'Load more'}
+                    <div className="text-center p-3 border-top bg-light-subtle">
+                        <button className="btn btn-sm btn-outline-primary rounded-pill px-4" disabled={loading} onClick={() => load(meta.current_page + 1, true)}>
+                            {loading ? 'Loading...' : 'Load more activity'}
                         </button>
                     </div>
                 )}

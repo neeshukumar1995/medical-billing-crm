@@ -18,8 +18,18 @@ const NavigationManu = () => {
     useEffect(() => {
         const getCompanyData = async () => {
             try {
-                const companyId = JSON.parse(localStorage.getItem('companyId'))
-                if (companyId) {
+                const rawCompanyId = localStorage.getItem('companyId')
+                let companyId = null
+                if (rawCompanyId) {
+                    try {
+                        companyId = JSON.parse(rawCompanyId)
+                    } catch {
+                        companyId = rawCompanyId
+                    }
+                }
+                if (companyId === 'all') {
+                    document.title = 'All Companies'
+                } else if (companyId) {
                     const response = await crmInstance.get(`/companies/${companyId}`)
                     if (response.data.logo) {
                         setCompanyLogo(`${IMAGE_BASE_URL}/${response.data.logo}`)

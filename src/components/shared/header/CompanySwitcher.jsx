@@ -1,16 +1,13 @@
 'use client'
 import React, { useMemo, useState } from 'react'
-import { useUser, NO_CLIENT } from '@/context/UserContext'
+import { useUser, NO_CLIENT, ALL_CLIENTS, ALL_COMPANIES } from '@/context/UserContext'
 
 /**
- * Header switcher: pick a Client, then one of that client's Companies.
- * Picking a company makes it the active company — every page of the portal
- * (patients, claims, leads, users, dashboard, ...) then shows its data.
- *
- * The Client dropdown appears only when the user's companies span more than
- * one client; otherwise the client is chosen automatically (UserContext).
- * The chosen client is shared with the Companies list and is also set by
- * opening a client from the sidebar's Clients list.
+ * Header switcher: pick a Client (or "All Clients"), then one of that client's
+ * Companies (or "All Companies").
+ * Picking a single company makes it the active company — every page of the portal
+ * shows its data. Picking "All Clients" / "All Companies" shows combined data
+ * across all accessible clients/companies.
  */
 const CompanySwitcher = () => {
     const { companies, activeCompanyId, switchCompany, selectedClientKey, setSelectedClientKey } = useUser()
@@ -32,23 +29,43 @@ const CompanySwitcher = () => {
     }, [companies])
 
     const showClientSelect = clients.length > 1
-    const clientCompanies = selectedClientKey
-        ? companies.filter(c => (c.client ? String(c.client.id) : NO_CLIENT) === selectedClientKey)
-        : []
+    const clientCompanies = useMemo(() => {
+        if (!selectedClientKey) return []
+        if (selectedClientKey === ALL_CLIENTS) return companies
+        return companies.filter(c => (c.client ? String(c.client.id) : NO_CLIENT) === selectedClientKey)
+    }, [companies, selectedClientKey])
 
     // Nothing to choose: one client with a single company.
     if (!showClientSelect && companies.length <= 1) {
         return null
     }
 
+    const handleClientChange = (e) => {
+        const val = e.target.value
+        setSelectedClientKey(val)
+        // If "All Clients" is selected, automatically select "All Companies" and reload
+        // so all clients & companies data loads immediately.
+        if (val === ALL_CLIENTS) {
+            setIsChanging(true)
+            switchCompany(ALL_COMPANIES)
+        } else if (val && activeCompanyId === ALL_COMPANIES) {
+            // If already in "All Companies" mode and the user switches to a specific client,
+            // reload so the portal shows all companies of that newly chosen client.
+            setIsChanging(true)
+            switchCompany(ALL_COMPANIES)
+        }
+    }
+
     const handleCompanyChange = (e) => {
         if (!e.target.value) return
         setIsChanging(true)
-        // Reloads the current page so it shows the newly chosen company's data.
+        // Reloads the current page so it shows the newly chosen company's (or all companies') data.
         switchCompany(e.target.value)
     }
 
-    const companyValue = clientCompanies.some(c => c.id === activeCompanyId) ? activeCompanyId : ''
+    const companyValue = activeCompanyId === ALL_COMPANIES
+        ? ALL_COMPANIES
+        : (clientCompanies.some(c => c.id === activeCompanyId) ? activeCompanyId : '')
 
     return (
         <div className="nxl-h-item d-flex align-items-center gap-2">
@@ -56,11 +73,12 @@ const CompanySwitcher = () => {
                 <select
                     className="form-select form-select-sm ol-company-select"
                     value={selectedClientKey || ''}
-                    onChange={(e) => setSelectedClientKey(e.target.value)}
+                    onChange={handleClientChange}
                     disabled={isChanging}
                     title="Client"
                 >
                     <option value="">— Select client —</option>
+                    <option value={ALL_CLIENTS}>All Clients ({clients.length})</option>
                     {clients.map(client => (
                         <option key={client.key} value={client.key}>{client.name}</option>
                     ))}
@@ -78,9 +96,14 @@ const CompanySwitcher = () => {
                 ) : (
                     <>
                         {companyValue === '' && <option value="">— Select company —</option>}
+                        {clientCompanies.length > 1 && (
+                            <option value={ALL_COMPANIES}>
+                                All Companies ({clientCompanies.length})
+                            </option>
+                        )}
                         {clientCompanies.map(company => (
                             <option key={company.id} value={company.id}>
-                                {company.name}{company.status && company.status !== 'Active' ? ` (${company.status})` : ''}
+                                {company.name}{selectedClientKey === ALL_CLIENTS && company.client?.name ? ` — ${company.client.name}` : ''}{company.status && company.status !== 'Active' ? ` (${company.status})` : ''}
                             </option>
                         ))}
                     </>

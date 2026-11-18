@@ -8,7 +8,7 @@ import Spinner from '@/components/shared/Spinner'
 import PermissionGuard from '@/components/shared/PermissionGuard'
 import ChartWrapper from '@/components/shared/ChartWrapper'
 import {
-    FiUsers, FiUserCheck, FiActivity, FiAlertCircle,
+    FiUsers, FiUserCheck, FiUserX, FiActivity, FiAlertCircle,
     FiPackage, FiShoppingCart, FiBriefcase, FiDollarSign, FiAward
 } from 'react-icons/fi'
 
@@ -185,17 +185,32 @@ const page = () => {
                 ) : data && (
                     <>
                         {/* Top-line KPIs */}
-                        <div className="row g-3 mb-4">
-                            <div className="col-md-3 col-sm-6">
-                                <KpiCard icon={<FiUsers />} label="Total Patients" value={data.total_patients} href="/medical-billing/patients" tone="primary" />
+                        <div className="row row-cols-1 row-cols-sm-2 row-cols-xl-5 g-3 mb-4">
+                            <div className="col">
+                                <KpiCard
+                                    icon={<FiUsers />}
+                                    label="Total Patients"
+                                    value={data.active_leads_count ?? data.total_patients}
+                                    href="/medical-billing/patients?lead_type=active"
+                                    tone="primary"
+                                />
                             </div>
-                            <div className="col-md-3 col-sm-6">
+                            <div className="col">
+                                <KpiCard
+                                    icon={<FiUserX />}
+                                    label="Dead Leads"
+                                    value={data.dead_leads_count ?? 0}
+                                    href="/medical-billing/patients?lead_type=dead"
+                                    tone="danger"
+                                />
+                            </div>
+                            <div className="col">
                                 <KpiCard icon={<FiUserCheck />} label="Total Providers" value={data.total_providers} href="/medical-billing/providers" tone="info" />
                             </div>
-                            <div className="col-md-3 col-sm-6">
+                            <div className="col">
                                 <KpiCard icon={<FiActivity />} label="Actions Today" value={data.actions_today} tone="teal" />
                             </div>
-                            <div className="col-md-3 col-sm-6">
+                            <div className="col">
                                 <KpiCard icon={<FiDollarSign />} label="Outstanding AR" value={`$${Number(data.ar_summary.grand_total).toFixed(2)}`} href="/medical-billing/ar" tone="danger" />
                             </div>
                         </div>
@@ -231,6 +246,10 @@ const page = () => {
                                     <div className="card-body">
                                         <h6 className="mb-3">Needs Attention</h6>
                                         <div className="d-flex flex-column gap-2">
+                                            <Link href="/medical-billing/patients?lead_type=dead" className="d-flex justify-content-between text-decoration-none text-dark">
+                                                <span><FiUserX className="me-2 text-danger" />Dead Leads</span>
+                                                <strong>{data.dead_leads_count ?? 0}</strong>
+                                            </Link>
                                             <Link href="/medical-billing/denials?bucket=open" className="d-flex justify-content-between text-decoration-none text-dark">
                                                 <span><FiAlertCircle className="me-2 text-danger" />Open Denials</span>
                                                 <strong>{data.open_denials}</strong>

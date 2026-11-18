@@ -53,8 +53,16 @@ const page = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
+        setFormData(prev => {
+            const next = { ...prev, [name]: value }
+            if (name === 'status' && value !== 'active') {
+                next.assigned_to = ''
+            }
+            return next
+        })
     }
+
+    const isDeadStatus = formData.status !== 'active'
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -146,18 +154,30 @@ const page = () => {
                                         <div className="col-md-4">
                                             <label className="form-label">Status</label>
                                             <select name="status" className="form-select" value={formData.status} onChange={handleInputChange} disabled={isLoading}>
-                                                <option value="active">Active</option>
+                                                <option value="active">Active Lead</option>
+                                                <option value="dead">Dead Lead</option>
                                                 <option value="inactive">Inactive</option>
                                                 <option value="deceased">Deceased</option>
                                                 <option value="archived">Archived</option>
                                             </select>
                                         </div>
                                         <div className="col-md-4">
-                                            <label className="form-label d-flex align-items-center gap-1"><FiUser size={14} /> Assigned To</label>
-                                            <select name="assigned_to" className="form-select" value={formData.assigned_to} onChange={handleInputChange} disabled={isLoading}>
-                                                <option value="">Unassigned</option>
+                                            <label className="form-label d-flex align-items-center gap-1"><FiUser size={14} /> Assigned To (Billing)</label>
+                                            <select
+                                                name="assigned_to"
+                                                className="form-select"
+                                                value={isDeadStatus ? '' : formData.assigned_to}
+                                                onChange={handleInputChange}
+                                                disabled={isLoading || isDeadStatus}
+                                            >
+                                                <option value="">Unassigned (Not in Billing)</option>
                                                 {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                             </select>
+                                            {isDeadStatus && (
+                                                <div className="text-danger small mt-1">
+                                                    Dead / Inactive leads cannot be assigned to Billing.
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="col-md-12">
                                             <label className="form-label">Address</label>
