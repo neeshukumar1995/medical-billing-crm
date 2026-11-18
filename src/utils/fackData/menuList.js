@@ -433,14 +433,14 @@ export const menuConfig = [
                 permission: "medical_patients.view",
                 subdropdownMenu: false
             },
-            {
-                id: 'guide',
-                name: "Revenue Cycle Guide",
-                path: "/medical-billing/guide",
-                icon: 'feather-book-open',
-                permission: "medical_patients.view",
-                subdropdownMenu: false
-            },
+            // {
+            //     id: 'guide',
+            //     name: "Revenue Cycle Guide",
+            //     path: "/medical-billing/guide",
+            //     icon: 'feather-book-open',
+            //     permission: "medical_patients.view",
+            //     subdropdownMenu: false
+            // },
         ]
     },
     {

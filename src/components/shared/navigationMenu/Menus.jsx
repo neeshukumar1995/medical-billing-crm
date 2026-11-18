@@ -124,6 +124,7 @@ const Menus = () => {
     // zero visible children shouldn't render an empty dropdown.
     const filterItems = (items) => items
         .map(item => {
+            if (item.id === 'guide' || item.path === '/medical-billing/guide') return null;
             if (item.isCaption) return item;
             if (item.role && !item.role.includes(userRole)) return null;
             if (item.hideForRoles && item.hideForRoles.includes(userRole)) return null;
